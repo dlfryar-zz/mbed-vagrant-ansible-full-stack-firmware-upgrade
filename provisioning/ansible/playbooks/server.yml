@@ -1,0 +1,9 @@
+---
+- hosts: server
+  become: yes
+  vars:
+    temp_folder: /tmp
+  roles:
+    - role: private/common
+    - role: private/mean-stack
+    - role: private/mbed-cloud-sdk-javascript-quickstart

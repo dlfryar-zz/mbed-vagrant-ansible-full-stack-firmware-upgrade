@@ -1,0 +1,41 @@
+---
+# tasks file for mbed-mean-project
+- name: mbed Cloud JavaScript App | Install NPM libs needed
+  npm: name={{ item }} state=present global=yes
+  with_items:
+    - express-generator
+
+- name: mbed Cloud JavaScript App | Get the mbed Cloud JS quickstart
+  git:
+    version: 'master'
+    accept_hostkey: yes
+    force: yes
+    repo: 'https://github.com/ARMmbed/mbed-cloud-sdk-javascript-quickstart'
+    dest: mbed-cloud-sdk-javascript-quickstart
+    update: no
+  become_user: "{{ generic_ubuntu_user }}"
+
+- name: mbed Cloud JavaScript App | Create dotfile with mbed cloud creds
+  template: dest="mbed-cloud-sdk-javascript-quickstart/.env" owner="{{ generic_ubuntu_user }}" group="{{ generic_ubuntu_user }}" mode=0400 src=envdotfile.j2
+
+- name: mbed Cloud JavaScript App | Stuff the mbedcloud creds in the dotfile
+  shell: grep MBED_CLOUD_API_KEY .mbedcloud | sed 's/MBED_CLOUD_API_KEY/ACCESS_KEY/' >> mbed-cloud-sdk-javascript-quickstart/.env
+
+- name: mbed Cloud JavaScript App | Install NPM dependencies
+  npm:
+    path: mbed-cloud-sdk-javascript-quickstart
+    state: latest
+  become_user: "{{ generic_ubuntu_user }}"
+
+- name: mbed Cloud JavaScript App | Change the endpoint to 1.2 by patching NodeJS SDK
+  replace:
+    dest: mbed-cloud-sdk-javascript-quickstart/node_modules/mbed-cloud-sdk/lib/common/apiBase.js
+    regexp: 'http:\/\/api.mbedcloud.com'
+    replace: 'https:\/\/api.us-east-1.mbedcloud.com'
+    backup: no
+
+- name: mbed Cloud JavaScript App | copy rc.local startup script
+  template: dest="/etc/rc.local" owner=root group=root mode=0755 src=rc.local.j2
+
+- name: mbed Cloud JavaScript App | bounce rc.local service to run our app
+  systemd: state=restarted name=rc.local enabled=yes

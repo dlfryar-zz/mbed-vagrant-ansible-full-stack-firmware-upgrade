@@ -1,0 +1,49 @@
+---
+# tasks file for mean-stack
+- name: MongoDB | repo keys for APT
+  apt_key: id=0C49F3730359A14518585931BC711F9BA15703C6  keyserver=keyserver.ubuntu.com
+
+- name: MongoDB | repo to APT
+  apt_repository: repo='deb http://repo.mongodb.org/apt/ubuntu {{ansible_distribution_release}}/mongodb-org/3.4 multiverse' state=present                                      
+
+- name: MongoDB | install
+  apt: pkg=mongodb-org state=present
+  notify: MongoDB | Ensure that MongoDB is running
+
+- name: MongoDB | create service link systemd
+  file:
+    src: /lib/systemd/system/mongod.service
+    dest: /etc/systemd/system/mongodb.service
+    state: link
+  notify: MongoDB | Ensure that MongoDB is running
+
+- name: Node.js | Get script
+  get_url:
+    url: "http://deb.nodesource.com/setup_6.x"
+    dest: "{{ temp_folder }}/nodejs.sh"
+
+- name: Node.js | Set execution right to script
+  file:
+    path: "{{ temp_folder }}/nodejs.sh"
+    mode: "u+x"
+
+- name: Node.js | Execute installation script
+  shell: "{{ temp_folder }}/nodejs.sh"
+
+- name: Node.js | Remove installation script
+  file:
+    path: "{{ temp_folder }}/nodejs.sh"
+    state: absent
+
+- name: Node.js | Install Node.js
+  apt: name={{ item }} state=present update_cache=yes
+  with_items:
+    - build-essential
+    - nodejs
+
+- name: Node.js | Install bower, gulp
+  npm: name={{ item }} state=present global=yes
+  with_items:
+    - bower
+    - gulp
+    - grunt-cli

@@ -1,0 +1,7 @@
+---
+# handlers file for mean-stack
+- name: MongoDB | Ensure that MongoDB is running
+  service:
+    name: mongod
+    state: reloaded
+    enabled: yes

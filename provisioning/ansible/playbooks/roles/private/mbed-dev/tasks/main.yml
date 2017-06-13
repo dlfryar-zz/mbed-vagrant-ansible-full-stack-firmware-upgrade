@@ -1,0 +1,50 @@
+---
+# tasks file for mbed-dev
+- name: mbed Dev | Install Mercurial, Python Pip
+  apt: state=latest pkg=mercurial,python-pip
+  become: yes
+  become_method: sudo
+
+- name: mbed Dev | Install GCC cross compiler for ARM Cortex-A/R/M processors
+  apt: state=latest pkg=gcc-arm-none-eabi
+  become: yes
+  become_method: sudo
+
+- name: mbed Dev | Install the ARM mbed command line interface
+  pip: name=mbed-cli
+  become: yes
+  become_method: sudo
+
+- name: mbed Dev | Creates a {{ mbed_source_dir }} directory for firmware
+  file: path={{ mbed_source_dir }} state=directory
+
+- name: mbed Dev | Fetch qs mbed client to build our mbed-os project
+  git:
+    version: 'qs-ethernet'
+    accept_hostkey: yes
+    force: yes
+    repo: "{{ mbed_repo_url }}"
+    dest: "{{ mbed_source_dir }}/{{ mbed_repo_name }}"
+    update: no
+
+- name: mbed Dev | copy ~/.../mbed_cloud_dev_credentials.c from host
+  copy:
+    src: ~/Downloads/testing/mbedcloud/1.2/production/mbed_cloud_dev_credentials.c
+    dest: "{{ mbed_source_dir }}/{{ mbed_repo_name }}"
+    owner: "{{ generic_ubuntu_user }}"
+    group: "{{ generic_ubuntu_user }}"
+    mode: 0664
+
+- name: mbed Dev | Update {{ mbed_repo_name }} with library dependencies
+  shell: /usr/local/bin/mbed update
+  args:
+    chdir: "{{ mbed_source_dir }}/{{ mbed_repo_name }}"
+
+- name: mbed Dev | Compile {{ mbed_repo_name }} for FRDM-K64F using GCC_ARM compiler
+  shell: /usr/local/bin/mbed compile -m K64F -t GCC_ARM >> mbed-cli-compile.log
+  args:
+    chdir: "{{ mbed_source_dir }}/{{ mbed_repo_name }}"
+    creates: mbed-cli-compile.log
+
+- name: mbed Dev | Copy the final binary back to host vagrant dir
+  shell: cp "Source/{{ mbed_repo_name }}/BUILD/K64F/GCC_ARM/mbed-cloud-client-example-sources-internal.bin" /vagrant/

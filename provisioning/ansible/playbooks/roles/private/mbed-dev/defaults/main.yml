@@ -1,0 +1,6 @@
+---
+# defaults file for mbed-dev
+mbed_source_dir: "~/Source/"
+mbed_repo_name: "mbed-cloud-client-example-sources-internal"
+mbed_repo_url: "https://github.com/mray19027/{{ mbed_repo_name }}"
+mbed_cli: "/usr/local/bin/mbed"

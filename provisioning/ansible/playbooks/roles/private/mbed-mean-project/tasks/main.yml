@@ -1,0 +1,30 @@
+---
+# tasks file for mbed-mean-project
+- name: MEAN Project | create {{ server_app_name }} dir
+  file: path={{ server_app_name }} state=directory
+
+- name: MEAN Project | Install NPM libs needed
+  npm: name={{ item }} state=present global=yes
+  with_items:
+    - express-generator
+    - mbed-cloud-sdk
+
+- name: MEAN Project | init {{ server_app_name }} express app
+  shell: express "{{ server_app_name }}"
+
+- name: MEAN Project | install {{ server_app_name }} express app
+  shell: npm install
+  args:
+    chdir: "{{ server_app_name }}"
+
+- name: MEAN Project | copy rc.local startup script
+  template: dest="/etc/rc.local" owner=root group=root mode=0755 src=rc.local.j2
+
+- name: MEAN Project | bounce rc.local service to run our app
+  systemd: state=restarted name=rc.local enabled=yes
+
+- name: MEAN Project | download and install ngrok the coolest tool ever!
+  unarchive:
+    src: https://bin.equinox.io/c/4VmDzA7iaHb/ngrok-stable-linux-amd64.zip
+    dest: /usr/local/bin
+    remote_src: True
