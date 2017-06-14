@@ -10,12 +10,12 @@
   become: yes
   become_method: sudo
 
-- name: mbed Dev | Install the ARM mbed command line interface
+- name: mbed Dev | Install the ARM mbed CLI
   pip: name=mbed-cli
   become: yes
   become_method: sudo
 
-- name: mbed Dev | Install libssl-dev needed by manifest tool
+- name: mbed Dev | Install libssl-dev for manifest tool
   apt: state=latest pkg=libssl-dev
   become: yes
   become_method: sudo
@@ -100,26 +100,29 @@
     chdir: "{{ mbed_source_dir }}{{ mbed_repo_name }}"
 
 # This is needed to pull in all the dependancies pal.lib etc.
-- name: mbed Dev | Update {{ mbed_repo_name }} with library dependencies
+- name: mbed Dev | Update mbed client repo with library dependencies
   shell: /usr/local/bin/mbed update
   args:
     chdir: "{{ mbed_source_dir }}/{{ mbed_repo_name }}"
 
 # This is only needed because we edited the .lib file for the PAL
-- name: mbed Dev | Update {{ mbed_repo_name }} with library dependencies
+- name: mbed Dev | Update mbed client repo with library dependencies
   shell: /usr/local/bin/mbed update
   args:
     chdir: "{{ mbed_source_dir }}/{{ mbed_repo_name }}"
 
-- name: mbed Dev | Compile {{ mbed_repo_name }} for FRDM-K64F using GCC_ARM compiler
+- name: mbed Dev | Compile mbed client FRDM-K64F with GCC_ARM
   shell: /usr/local/bin/mbed compile -m K64F -t GCC_ARM >> mbed-cli-compile.log
   args:
     chdir: "{{ mbed_source_dir }}{{ mbed_repo_name }}"
     creates: mbed-cli-compile.log
 
-# Run merge tool in tools.merge.py to get a RED.BIN
+# You will end up with a combined bootload + firmware_app binary for the K64F
+# that will be copied to /vagrant/FRDM-K64F-RED.bin
+- name: mbed Dev | Combine the bootloader and app to RED.bin
+  shell: python combine_bootloader_with_app.py -d 0 -c 0x20400 -b mbed-bootloader-k64f.bin -a ../BUILD/K64F/GCC_ARM/mbed-cloud-client-example-sources-internal.bin -o /vagrant/FRDM-K64F-RED.bin
+  args:
+    chdir: "{{ mbed_source_dir }}{{ mbed_repo_name }}/tools"
 
-- name: mbed Dev | Copy the final binary back to host vagrant dir
-  shell: cp "Source/{{ mbed_repo_name }}/BUILD/K64F/GCC_ARM/mbed-cloud-client-example-sources-internal.bin" /vagrant/FRDM-K64F-RED.bin
-
-# create two manifests and copy them to directory
+# create two manifests and copy them to directory and two firmware images GREEN/BLUE
+# ...

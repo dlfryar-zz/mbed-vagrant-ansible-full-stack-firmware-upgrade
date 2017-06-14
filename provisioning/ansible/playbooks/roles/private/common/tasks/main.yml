@@ -3,7 +3,7 @@
 - name: Common | Creates ssh dir
   file: path=/home/{{ ansible_env.USER }}/.ssh state=directory
 
-- name: Common | Save private key from local user
+- name: Common | Copy private key from local
   copy:
     src: ~/.ssh/id_rsa
     dest: /home/{{ ansible_env.USER }}/.ssh/id_rsa
@@ -11,7 +11,7 @@
     group: "{{ ansible_env.USER }}"
     mode: 0600
 
-- name: Common | Save private Github creds
+- name: Common | Copy private Github creds from local
   copy:
     src: ~/.netrc
     dest: /home/{{ ansible_env.USER }}/.netrc
@@ -19,7 +19,7 @@
     group: "{{ ansible_env.USER }}"
     mode: 0400
 
-- name: Common | Save mbedcloud creds
+- name: Common | Copy mbedcloud creds from local
   copy:
     src: ~/.mbedcloud
     dest: /home/{{ ansible_env.USER }}/.mbedcloud
@@ -34,5 +34,5 @@
   become: yes
   become_method: sudo
 
-- name: Common | add github to our known_hosts
+- name: Common | Add github to our known_hosts
   shell: ssh-keyscan -H github.com > .ssh/known_hosts
