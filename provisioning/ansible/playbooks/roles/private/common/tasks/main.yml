@@ -1,34 +1,36 @@
 ---
 # tasks file for common
 - name: Common | Creates ssh dir
-  file: path=/home/{{ generic_ubuntu_user }}/.ssh state=directory
+  file: path=/home/{{ ansible_env.USER }}/.ssh state=directory
 
 - name: Common | Save private key from local user
   copy:
     src: ~/.ssh/id_rsa
-    dest: /home/{{ generic_ubuntu_user }}/.ssh/id_rsa
-    owner: "{{ generic_ubuntu_user }}"
-    group: "{{ generic_ubuntu_user }}"
+    dest: /home/{{ ansible_env.USER }}/.ssh/id_rsa
+    owner: "{{ ansible_env.USER }}"
+    group: "{{ ansible_env.USER }}"
     mode: 0600
 
 - name: Common | Save private Github creds
   copy:
     src: ~/.netrc
-    dest: /home/{{ generic_ubuntu_user }}/.netrc
-    owner: "{{ generic_ubuntu_user }}"
-    group: "{{ generic_ubuntu_user }}"
+    dest: /home/{{ ansible_env.USER }}/.netrc
+    owner: "{{ ansible_env.USER }}"
+    group: "{{ ansible_env.USER }}"
     mode: 0400
 
 - name: Common | Save mbedcloud creds
   copy:
     src: ~/.mbedcloud
-    dest: /home/{{ generic_ubuntu_user }}/.mbedcloud
-    owner: "{{ generic_ubuntu_user }}"
-    group: "{{ generic_ubuntu_user }}"
+    dest: /home/{{ ansible_env.USER }}/.mbedcloud
+    owner: "{{ ansible_env.USER }}"
+    group: "{{ ansible_env.USER }}"
     mode: 0400
 
+# jq is needed to edit JSON structs from the command line
+# moreutils contains sponge which can do inplace edits
 - name: Common | Install common utilities with apt
-  apt: state=latest pkg=vim,most,tree,git,curl,wget,unzip
+  apt: state=latest pkg=vim,most,tree,git,curl,wget,unzip,jq,moreutils
   become: yes
   become_method: sudo
 

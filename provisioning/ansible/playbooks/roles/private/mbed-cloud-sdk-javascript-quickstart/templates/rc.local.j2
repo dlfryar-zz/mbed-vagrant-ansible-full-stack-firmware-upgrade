@@ -11,6 +11,6 @@
 #
 # By default this script does nothing.
 
-sudo -H -u {{ generic_ubuntu_user }} bash -c 'cd /home/{{ generic_ubuntu_user }}/mbed-cloud-sdk-javascript-quickstart/ && nohup node app.js &'
+sudo -H -u {{ ansible_env.USER }} bash -c 'cd /home/{{ ansible_env.USER }}/mbed-cloud-sdk-javascript-quickstart/ && nohup node app.js &'
 
 exit 0

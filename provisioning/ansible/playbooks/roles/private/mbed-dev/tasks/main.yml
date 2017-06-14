@@ -5,7 +5,7 @@
   become: yes
   become_method: sudo
 
-- name: mbed Dev | Install GCC cross compiler for ARM Cortex-A/R/M processors
+- name: mbed Dev | Install GCC Cortex-A/R/M cross compiler
   apt: state=latest pkg=gcc-arm-none-eabi
   become: yes
   become_method: sudo
@@ -15,26 +15,97 @@
   become: yes
   become_method: sudo
 
+- name: mbed Dev | Install libssl-dev needed by manifest tool
+  apt: state=latest pkg=libssl-dev
+  become: yes
+  become_method: sudo
+
+- name: mbed Dev | Clone the mbed manifest tool
+  git:
+    version: 'master'
+    accept_hostkey: yes
+    force: yes
+    repo: https://github.com/ARMmbed/manifest-tool-restricted.git
+    dest: "/home/{{ ansible_env.USER }}/Downloads/manifest-tool-restricted"
+    update: no
+
+- name: mbed Dev | Install the mbed manifest tool with PIP
+  shell: pip install .
+  args:
+    chdir: "/home/{{ ansible_env.USER }}/Downloads/manifest-tool-restricted"
+  become: yes
+  become_method: sudo
+
+- name: mbed Dev | Creates a manifest tool directory
+  file: path=/home/{{ ansible_env.USER }}/Downloads/manifest-tool state=directory
+
+- name: mbed Dev | Initialize the manifest tool
+  shell: manifest-tool init -d "mbed-quickstart-company" -m "FRDM-K64F" -q --force
+  args:
+    chdir: "/home/{{ ansible_env.USER }}/Downloads/manifest-tool"
+
 - name: mbed Dev | Creates a {{ mbed_source_dir }} directory for firmware
   file: path={{ mbed_source_dir }} state=directory
 
+# This repo already changed mbed-os.lib to point to version 5.5
 - name: mbed Dev | Fetch qs mbed client to build our mbed-os project
   git:
-    version: 'qs-ethernet'
+    version: 'qs-base'
     accept_hostkey: yes
     force: yes
     repo: "{{ mbed_repo_url }}"
     dest: "{{ mbed_source_dir }}/{{ mbed_repo_name }}"
     update: no
 
-- name: mbed Dev | copy ~/.../mbed_cloud_dev_credentials.c from host
+- name: mbed Dev | Copy ~/.../mbed_cloud_dev_credentials.c from host
   copy:
     src: ~/Downloads/testing/mbedcloud/1.2/production/mbed_cloud_dev_credentials.c
     dest: "{{ mbed_source_dir }}/{{ mbed_repo_name }}"
-    owner: "{{ generic_ubuntu_user }}"
-    group: "{{ generic_ubuntu_user }}"
+    owner: "{{ ansible_env.USER }}"
+    group: "{{ ansible_env.USER }}"
     mode: 0664
 
+- name: mbed Dev | Copy update_default_resources.c from manifest dir
+  shell: cp /home/{{ ansible_env.USER }}/Downloads/manifest-tool/update_default_resources.c {{ mbed_source_dir }}{{ mbed_repo_name }}
+
+# modify mbed-client-pal.lib to point to mbed-os 5.5 branch
+# EDIT mbed-pal.lib
+
+- name: mbed Dev | Remove old PAL
+  file:
+    path: "{{ mbed_source_dir }}{{ mbed_repo_name }}/pal-platform"
+    state: absent    
+
+- name: mbed Dev | Clone correct PAL
+  git:
+    version: 'PAL-RR1.2.1-RC9'
+    accept_hostkey: yes
+    force: yes
+    repo: https://github.com/ARMmbed/pal-platform.git
+    dest: "{{ mbed_source_dir }}{{ mbed_repo_name }}/pal-platform"
+    update: no
+
+- name: mbed Dev | Change LED blink color to RED in binary
+  lineinfile:
+    path: "{{ mbed_source_dir }}{{ mbed_repo_name }}/main.cpp"
+    regexp: 'DigitalOut[ ]*led\(LED_RED\);'
+    line: 'DigitalOut led(LED_RED);'
+    state: present
+
+# Note: you need mbed-os 5.5 in order for this to work
+# https://docs.mbed.com/docs/mbed-os-handbook/en/latest/advanced/bootloader/
+- name: mbed Dev | Add mbed_app_start offset to mbed_app.json
+  shell: jq '.target_overrides."*"."target.mbed_app_start" = "0x20400"' mbed_app.json | sponge mbed_app.json
+  args:
+    chdir: "{{ mbed_source_dir }}{{ mbed_repo_name }}"
+
+# This is needed to pull in all the dependancies pal.lib etc.
+- name: mbed Dev | Update {{ mbed_repo_name }} with library dependencies
+  shell: /usr/local/bin/mbed update
+  args:
+    chdir: "{{ mbed_source_dir }}/{{ mbed_repo_name }}"
+
+# This is only needed because we edited the .lib file for the PAL
 - name: mbed Dev | Update {{ mbed_repo_name }} with library dependencies
   shell: /usr/local/bin/mbed update
   args:
@@ -43,8 +114,12 @@
 - name: mbed Dev | Compile {{ mbed_repo_name }} for FRDM-K64F using GCC_ARM compiler
   shell: /usr/local/bin/mbed compile -m K64F -t GCC_ARM >> mbed-cli-compile.log
   args:
-    chdir: "{{ mbed_source_dir }}/{{ mbed_repo_name }}"
+    chdir: "{{ mbed_source_dir }}{{ mbed_repo_name }}"
     creates: mbed-cli-compile.log
 
+# Run merge tool in tools.merge.py to get a RED.BIN
+
 - name: mbed Dev | Copy the final binary back to host vagrant dir
-  shell: cp "Source/{{ mbed_repo_name }}/BUILD/K64F/GCC_ARM/mbed-cloud-client-example-sources-internal.bin" /vagrant/
+  shell: cp "Source/{{ mbed_repo_name }}/BUILD/K64F/GCC_ARM/mbed-cloud-client-example-sources-internal.bin" /vagrant/FRDM-K64F-RED.bin
+
+# create two manifests and copy them to directory
