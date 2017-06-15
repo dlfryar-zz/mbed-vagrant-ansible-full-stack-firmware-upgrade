@@ -5,3 +5,5 @@
     name: mongod
     state: started
     enabled: yes
+  become: yes
+  become_method: sudo
