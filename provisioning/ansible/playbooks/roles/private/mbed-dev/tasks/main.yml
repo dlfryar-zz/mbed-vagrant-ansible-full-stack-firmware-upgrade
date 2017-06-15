@@ -88,7 +88,7 @@
 - name: mbed Dev | Change LED blink color to RED in binary
   lineinfile:
     path: "{{ mbed_source_dir }}{{ mbed_repo_name }}/main.cpp"
-    regexp: 'DigitalOut[ ]*led\(LED_RED\);'
+    regexp: 'DigitalOut[ ]*led\((LED_RED|LED_GREEN|LED_BLUE)\);'
     line: 'DigitalOut led(LED_RED);'
     state: present
 
@@ -111,7 +111,7 @@
   args:
     chdir: "{{ mbed_source_dir }}/{{ mbed_repo_name }}"
 
-- name: mbed Dev | Compile mbed client FRDM-K64F with GCC_ARM
+- name: mbed Dev | Compile RED mbed client FRDM-K64F
   shell: /usr/local/bin/mbed compile -m K64F -t GCC_ARM >> mbed-cli-compile.log
   args:
     chdir: "{{ mbed_source_dir }}{{ mbed_repo_name }}"
@@ -124,5 +124,65 @@
   args:
     chdir: "{{ mbed_source_dir }}{{ mbed_repo_name }}/tools"
 
-# create two manifests and copy them to directory and two firmware images GREEN/BLUE
-# ...
+# build GREEN.bin
+# copy to dir
+# upload to mbed Cloud and save location in green.url
+# create manifest manifest-tool create -u <url> -p <payload> -o <manifest file>
+
+- name: mbed Dev | Change LED blink color to GREEN in binary
+  lineinfile:
+    path: "{{ mbed_source_dir }}{{ mbed_repo_name }}/main.cpp"
+    regexp: 'DigitalOut[ ]*led\((LED_RED|LED_GREEN|LED_BLUE)\);'
+    line: 'DigitalOut led(LED_GREEN);'
+    state: present
+
+- name: mbed Dev | Compile GREEN mbed client FRDM-K64F
+  shell: /usr/local/bin/mbed compile -m K64F -t GCC_ARM >> mbed-cli-compile.log
+  args:
+    chdir: "{{ mbed_source_dir }}{{ mbed_repo_name }}"
+    creates: mbed-cli-compile.log
+
+- name: mbed Dev | Copy green.bin to /vagrant
+  shell: cp {{ mbed_source_dir }}{{ mbed_repo_name }}/BUILD/K64F/GCC_ARM/mbed-cloud-client-example-sources-internal.bin /vagrant/FRDM-K64F-GREEN.bin
+
+# Upload green.bin with cURL and save resource path to green.json
+
+# Generate a manifest with green.bin url and copy to /vagrant/FRDM-K64F-GREEN.manifest
+
+# Upload green.manifest with cURL to mbed Cloud
+
+# Create green filter with cURL to mbed Cloud
+
+# Create green campaign with cURL to mbed Cloud
+
+# build BLUE.bin
+# copy to dir
+# upload to mbed Cloud
+# upload to mbed Cloud and save location in blue.url
+# create manifest manifest-tool create -u <url> -p <payload> -o <manifest file>
+
+- name: mbed Dev | Change LED blink color to BLUE in binary
+  lineinfile:
+    path: "{{ mbed_source_dir }}{{ mbed_repo_name }}/main.cpp"
+    regexp: 'DigitalOut[ ]*led\((LED_RED|LED_GREEN|LED_BLUE)\);'
+    line: 'DigitalOut led(LED_BLUE);'
+    state: present
+
+- name: mbed Dev | Compile BLUE mbed client FRDM-K64F
+  shell: /usr/local/bin/mbed compile -m K64F -t GCC_ARM >> mbed-cli-compile.log
+  args:
+    chdir: "{{ mbed_source_dir }}{{ mbed_repo_name }}"
+    creates: mbed-cli-compile.log
+
+- name: mbed Dev | Copy blue.bin to /vagrant
+  shell: cp {{ mbed_source_dir }}{{ mbed_repo_name }}/BUILD/K64F/GCC_ARM/mbed-cloud-client-example-sources-internal.bin /vagrant/FRDM-K64F-BLUE.bin
+
+# Upload blue.bin with cURL and save resource path to blue.json
+
+# Generate a manifest with blue.bin url and copy to /vagrant/FRDM-K64F-BLUE.manifest
+
+# Upload blue.manifest with cURL to mbed Cloud
+
+# Create blue filter with cURL to mbed Cloud
+
+# Create blue campaign with cURL to mbed Cloud
