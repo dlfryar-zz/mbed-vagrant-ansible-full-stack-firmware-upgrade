@@ -45,7 +45,7 @@
     chdir: "/home/{{ ansible_env.USER }}/Downloads/manifest-tool"
 
 - name: mbed Dev | Dump manifest data to /vagrant/FRDM-K64F-QS-MANIFEST-DATA.json
-  shell: jq '. | {"json":.}' .manifest_tool.json | jq ".\"pem\"=\"$(cat .update-certificates/default.key.pem)\"" | jq ".\"der\"=\"$(base64 -w0 .update-certificates/default.der)\"" | sponge /vagrant/FRDM-K64F-QS-MANIFEST-DATA.json
+  shell: jq '. | {"json":.}' .manifest_tool.json | jq ".\"pem\"=\"$(cat .update-certificates/default.key.pem)\"" | jq ".\"der\"=\"$(base64 -w0 .update-certificates/default.der)\"" | sponge /vagrant/FRDM-K64F-QS-MANIFEST-DATA-`date +"%s"`.json
   args:
     chdir: "/home/{{ ansible_env.USER }}/Downloads/manifest-tool"
 
@@ -153,7 +153,7 @@
 # that will be copied to /vagrant/FRDM-K64F-RED.bin
 # -s 0 sets the initial time to Unix epoch 1/1/1970 00:00.00
 - name: mbed Dev | Combine the bootloader and app to RED.bin
-  shell: python combine_bootloader_with_app.py -s 0 --header-offset 0x20000 --app-offset 0x20400 -b mbed-bootloader-k64f.bin -a ../BUILD/K64F/GCC_ARM/mbed-cloud-client-example-sources-internal.bin -o /vagrant/FRDM-K64F-RED.bin
+  shell: python combine_bootloader_with_app.py -s 0 --header-offset 0x20000 --app-offset 0x20400 -b mbed-bootloader-k64f.bin -a ../BUILD/K64F/GCC_ARM/mbed-cloud-client-example-sources-internal.bin -o /vagrant/FRDM-K64F-RED-`date +"%s"`.bin
   args:
     chdir: "{{ mbed_source_dir }}{{ mbed_repo_name }}/tools"
 
@@ -176,7 +176,7 @@
     creates: mbed-cli-compile.log
 
 - name: mbed Dev | Copy green.bin to /vagrant
-  shell: cp {{ mbed_source_dir }}{{ mbed_repo_name }}/BUILD/K64F/GCC_ARM/mbed-cloud-client-example-sources-internal.bin /vagrant/FRDM-K64F-GREEN.bin
+  shell: cp {{ mbed_source_dir }}{{ mbed_repo_name }}/BUILD/K64F/GCC_ARM/mbed-cloud-client-example-sources-internal.bin /vagrant/FRDM-K64F-GREEN-`date +"%s"`.bin
 
 # Upload green.bin with cURL and save resource path to green.json
 
@@ -208,7 +208,7 @@
     creates: mbed-cli-compile.log
 
 - name: mbed Dev | Copy blue.bin to /vagrant
-  shell: cp {{ mbed_source_dir }}{{ mbed_repo_name }}/BUILD/K64F/GCC_ARM/mbed-cloud-client-example-sources-internal.bin /vagrant/FRDM-K64F-BLUE.bin
+  shell: cp {{ mbed_source_dir }}{{ mbed_repo_name }}/BUILD/K64F/GCC_ARM/mbed-cloud-client-example-sources-internal.bin /vagrant/FRDM-K64F-BLUE-`date +"%s"`.bin
 
 # Upload blue.bin with cURL and save resource path to blue.json
 
