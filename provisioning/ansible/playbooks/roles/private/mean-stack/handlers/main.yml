@@ -3,5 +3,5 @@
 - name: MongoDB | Ensure that MongoDB is running
   service:
     name: mongod
-    state: reloaded
+    state: started
     enabled: yes
