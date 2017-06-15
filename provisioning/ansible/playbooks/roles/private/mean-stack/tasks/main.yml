@@ -2,13 +2,19 @@
 # tasks file for mean-stack
 - name: MongoDB | repo keys for APT
   apt_key: id=0C49F3730359A14518585931BC711F9BA15703C6  keyserver=keyserver.ubuntu.com
+  become: yes
+  become_method: sudo
 
 - name: MongoDB | repo to APT
   apt_repository: repo='deb http://repo.mongodb.org/apt/ubuntu {{ansible_distribution_release}}/mongodb-org/3.4 multiverse' state=present                                      
+  become: yes
+  become_method: sudo
 
 - name: MongoDB | install
   apt: pkg=mongodb-org state=present
   notify: MongoDB | Ensure that MongoDB is running
+  become: yes
+  become_method: sudo
 
 - name: MongoDB | create service link systemd
   file:
@@ -16,6 +22,8 @@
     dest: /etc/systemd/system/mongodb.service
     state: link
   notify: MongoDB | Ensure that MongoDB is running
+  become: yes
+  become_method: sudo
 
 - name: Node.js | Get script
   get_url:
@@ -29,6 +37,8 @@
 
 - name: Node.js | Execute installation script
   shell: "{{ temp_folder }}/nodejs.sh"
+  become: yes
+  become_method: sudo
 
 - name: Node.js | Remove installation script
   file:
@@ -40,6 +50,8 @@
   with_items:
     - build-essential
     - nodejs
+  become: yes
+  become_method: sudo
 
 - name: Node.js | Install bower, gulp
   npm: name={{ item }} state=present global=yes
@@ -47,3 +59,5 @@
     - bower
     - gulp
     - grunt-cli
+  become: yes
+  become_method: sudo

@@ -1,6 +1,6 @@
 ---
 - hosts: server
-  become: yes
+#  become: yes
   vars:
     temp_folder: /tmp
   roles:
