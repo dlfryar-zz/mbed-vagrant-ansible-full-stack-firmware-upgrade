@@ -49,25 +49,6 @@
   args:
     chdir: "/home/{{ ansible_env.USER }}/Downloads/manifest-tool"
 
-# Copy the manifest data/files to a JSON struct for the quickstart to use
-# jq '. | {".manifest_tool.json": .}' .manifest_tool.json | sponge /vagrant/FRDM-K64F-QS-MANIFEST-DATA.json
-# cat FRDM-K64F-QS-MANIFEST-DATA.json | jq ".\"default.key.pem\"=\"$(cat .update-certificates/default.key.pem)\"" | sponge FRDM-K64F-QS-MANIFEST-DATA.json
-# cat FRDM-K64F-QS-MANIFEST-DATA.json | jq ".\"default.der\"=\"$(hexdump .update-certificates/default.der)\"" | sponge FRDM-K64F-QS-MANIFEST-DATA.json 
-
-# Copy the JSON struct over to /vagrant/FRDM-K64F-QS-MANIFEST-DATA.json
-
-# jq '. | {".manifest_tool.json": .}' .manifest_tool.json | sponge /vagrant/FRDM-K64F-QS-MANIFEST-DATA.json
-# cat FRDM-K64F-QS-MANIFEST-DATA.json | jq ".\"default.key.pem\"=\"$(cat .update-certificates/default.key.pem)\"" | sponge FRDM-K64F-QS-MANIFEST-DATA.json
-# cat FRDM-K64F-QS-MANIFEST-DATA.json | jq ".\"default.der\"=\"$(hexdump .update-certificates/default.der)\"" | sponge FRDM-K64F-QS-MANIFEST-DATA.json 
-
-# jq '. | {".manifest_tool.json": .}' .manifest_tool.json | jq ".\"default.key.pem\"=\"$(cat .update-certificates/default.key.pem)\"" | jq ".\"default.der\"=\"$(hexdump .update-certificates/default.der)\"" | sponge FRDM-K64F-QS-MANIFEST-DATA.json 
-
-# jq '. | {".manifest_tool.json": .}' .manifest_tool.json | sponge /vagrant/FRDM-K64F-QS-MANIFEST-DATA.json
-# cat FRDM-K64F-QS-MANIFEST-DATA.json | jq ".\"default.key.pem\"=\"$(cat .update-certificates/default.key.pem)\"" | sponge FRDM-K64F-QS-MANIFEST-DATA.json
-# cat FRDM-K64F-QS-MANIFEST-DATA.json | jq ".\"default.der\"=\"$(hexdump .update-certificates/default.der)\"" | sponge FRDM-K64F-QS-MANIFEST-DATA.json 
-
-#  shell: jq '. | {"json": .}' .manifest_tool.json | jq ".\"pem\"=\"$(cat .update-certificates/default.key.pem)\"" | jq ".\"der\"=\"$(base64 .update-certificates/default.der)\"" | sponge /vagrant/FRDM-K64F-QS-MANIFEST-DATA.json
-
 - name: mbed Dev | Creates a {{ mbed_source_dir }} directory for firmware
   file: path={{ mbed_source_dir }} state=directory
 
@@ -147,7 +128,7 @@
   shell: /usr/local/bin/mbed compile -m K64F -t GCC_ARM >> mbed-cli-compile.log
   args:
     chdir: "{{ mbed_source_dir }}{{ mbed_repo_name }}"
-    creates: mbed-cli-compile.log
+    # creates: mbed-cli-compile.log
 
 # You will end up with a combined bootload + firmware_app binary for the K64F
 # that will be copied to /vagrant/FRDM-K64F-RED.bin
@@ -173,7 +154,7 @@
   shell: /usr/local/bin/mbed compile -m K64F -t GCC_ARM >> mbed-cli-compile.log
   args:
     chdir: "{{ mbed_source_dir }}{{ mbed_repo_name }}"
-    creates: mbed-cli-compile.log
+    # creates: mbed-cli-compile.log
 
 - name: mbed Dev | Copy green.bin to /vagrant
   shell: cp {{ mbed_source_dir }}{{ mbed_repo_name }}/BUILD/K64F/GCC_ARM/mbed-cloud-client-example-sources-internal.bin /vagrant/FRDM-K64F-GREEN-`date +"%s"`.bin
@@ -205,7 +186,7 @@
   shell: /usr/local/bin/mbed compile -m K64F -t GCC_ARM >> mbed-cli-compile.log
   args:
     chdir: "{{ mbed_source_dir }}{{ mbed_repo_name }}"
-    creates: mbed-cli-compile.log
+    # creates: mbed-cli-compile.log
 
 - name: mbed Dev | Copy blue.bin to /vagrant
   shell: cp {{ mbed_source_dir }}{{ mbed_repo_name }}/BUILD/K64F/GCC_ARM/mbed-cloud-client-example-sources-internal.bin /vagrant/FRDM-K64F-BLUE-`date +"%s"`.bin
