@@ -99,12 +99,6 @@
   args:
     chdir: "{{ mbed_source_dir }}{{ mbed_repo_name }}"
 
-# This is needed to pull in all the dependancies pal.lib etc.
-- name: mbed Dev | Update mbed client repo with library dependencies
-  shell: /usr/local/bin/mbed update
-  args:
-    chdir: "{{ mbed_source_dir }}/{{ mbed_repo_name }}"
-
 # This is only needed because we edited the .lib file for the PAL
 - name: mbed Dev | Update mbed client repo with library dependencies
   shell: /usr/local/bin/mbed update
