@@ -1,5 +1,9 @@
 ---
-# tasks file for common
+- name: Common | Get spoch time from local system
+  shell: date +%s
+  register: current_build_time_epoch
+  run_once: true
+
 - name: Common | Creates ssh dir
   file: path=/home/{{ ansible_env.USER }}/.ssh state=directory
 

@@ -44,8 +44,10 @@
   args:
     chdir: "/home/{{ ansible_env.USER }}/Downloads/manifest-tool"
 
-- name: mbed Dev | Dump manifest data to /vagrant/FRDM-K64F-QS-MANIFEST-DATA.json
-  shell: jq '. | {"json":.}' .manifest_tool.json | jq ".\"pem\"=\"$(cat .update-certificates/default.key.pem)\"" | jq ".\"der\"=\"$(base64 -w0 .update-certificates/default.der)\"" | sponge /vagrant/FRDM-K64F-QS-MANIFEST-DATA-`date +"%s"`.json
+# - debug: msg="the current date is {{ current_build_time_epoch.stdout }}"
+
+- name: mbed Dev | Dump manifest data to /vagrant/FRDM-K64F-QS-MANIFEST-DATA-{{ current_build_time_epoch.stdout }}.json
+  shell: jq '. | {"json":.}' .manifest_tool.json | jq ".\"pem\"=\"$(cat .update-certificates/default.key.pem)\"" | jq ".\"der\"=\"$(base64 -w0 .update-certificates/default.der)\"" | sponge "/vagrant/FRDM-K64F-QS-MANIFEST-DATA-{{ current_build_time_epoch.stdout }}.json"
   args:
     chdir: "/home/{{ ansible_env.USER }}/Downloads/manifest-tool"
 
@@ -134,7 +136,7 @@
 # that will be copied to /vagrant/FRDM-K64F-RED.bin
 # -s 0 sets the initial time to Unix epoch 1/1/1970 00:00.00
 - name: mbed Dev | Combine the bootloader and app to RED.bin
-  shell: python combine_bootloader_with_app.py -s 0 --header-offset 0x20000 --app-offset 0x20400 -b mbed-bootloader-k64f.bin -a ../BUILD/K64F/GCC_ARM/mbed-cloud-client-example-sources-internal.bin -o /vagrant/FRDM-K64F-RED-`date +"%s"`.bin
+  shell: python combine_bootloader_with_app.py -s 0 --header-offset 0x20000 --app-offset 0x20400 -b mbed-bootloader-k64f.bin -a ../BUILD/K64F/GCC_ARM/mbed-cloud-client-example-sources-internal.bin -o /vagrant/FRDM-K64F-RED-{{ current_build_time_epoch.stdout }}.bin
   args:
     chdir: "{{ mbed_source_dir }}{{ mbed_repo_name }}/tools"
 
@@ -157,7 +159,7 @@
     # creates: mbed-cli-compile.log
 
 - name: mbed Dev | Copy green.bin to /vagrant
-  shell: cp {{ mbed_source_dir }}{{ mbed_repo_name }}/BUILD/K64F/GCC_ARM/mbed-cloud-client-example-sources-internal.bin /vagrant/FRDM-K64F-GREEN-`date +"%s"`.bin
+  shell: cp {{ mbed_source_dir }}{{ mbed_repo_name }}/BUILD/K64F/GCC_ARM/mbed-cloud-client-example-sources-internal.bin /vagrant/FRDM-K64F-GREEN-{{ current_build_time_epoch.stdout }}.bin
 
 # Upload green.bin with cURL and save resource path to green.json
 
@@ -189,14 +191,19 @@
     # creates: mbed-cli-compile.log
 
 - name: mbed Dev | Copy blue.bin to /vagrant
-  shell: cp {{ mbed_source_dir }}{{ mbed_repo_name }}/BUILD/K64F/GCC_ARM/mbed-cloud-client-example-sources-internal.bin /vagrant/FRDM-K64F-BLUE-`date +"%s"`.bin
+  shell: cp {{ mbed_source_dir }}{{ mbed_repo_name }}/BUILD/K64F/GCC_ARM/mbed-cloud-client-example-sources-internal.bin /vagrant/FRDM-K64F-BLUE-{{ current_build_time_epoch.stdout }}.bin
 
-# Upload blue.bin with cURL and save resource path to blue.json
+# Upload blue.bin with cURL and save resource path to blue.json and save image location and ID
+# curl -X POST https://api.us-east-1.mbedcloud.com/v3/firmware-images/ -H 'authorization: Bearer ak_1MDE1ODc3OGRhNTYwMDI0MjBhMDE0YzExMDAwMDAwMDA0159d7f1c2c002420a015e0600000000pzg5XIIekzquoRswJTlDSGCepTbAvEL1' -H 'cache-control: no-cache' -H 'content-type: multipart/form-data' -F datafile=@FRDM-K64F-RED-1497567334.bin -F name=FRDM-K64F-RED-1497567334.bin
 
 # Generate a manifest with blue.bin url and copy to /vagrant/FRDM-K64F-BLUE.manifest
 
-# Upload blue.manifest with cURL to mbed Cloud
+# Upload blue.manifest with cURL to mbed Cloud and save manifest resource ID
 
-# Create blue filter with cURL to mbed Cloud
+# Add custom_attributes to devices connected
 
-# Create blue campaign with cURL to mbed Cloud
+# Create blue filter with cURL to mbed Cloud based on custom_attributes
+
+# Create blue campaign with cURL to mbed Cloud with image ID
+
+# Start blue and green campaigns
