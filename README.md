@@ -11,12 +11,21 @@
 
 ### Create your ARM mbed Cloud credential files
 
-    1) ~/.mbedcloud
+    1) ~/.mbedcloud and .mbedcloud.json
     2) ~/Downloads/testing/mbedcloud/1.2/production/mbed_cloud_dev_credentials.c
     3) ~/.netrc
 
     .mbedcloud - https://portal.mbedcloud.com/access/keys
         MBED_CLOUD_API_KEY="my_api_key_from_mbedcloud_dashboard"
+
+    .mbedcloud.json
+        {
+            "MBED_CLOUD_API_ENDPOINT": "https://api.mbedcloud.com",
+            "MBED_CLOUD_API_KEY": "ak_XXXXX",
+            "MBED_CLOUD_EMAIL": "my.email@somedomain.com",
+            "MBED_CLOUD_PASSWORD": "my_password",
+            "MBED_CLOUD_TEAM": "my_team_name"
+        }
 
     mbed_cloud_dev_credentials.c
         https://github.com/ARMmbed/mbed-cloud-client-example/blob/master/README.md#client-credentials

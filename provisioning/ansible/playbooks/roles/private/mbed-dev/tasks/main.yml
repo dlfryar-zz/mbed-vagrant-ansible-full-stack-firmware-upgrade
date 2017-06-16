@@ -44,7 +44,9 @@
   args:
     chdir: "/home/{{ ansible_env.USER }}/Downloads/manifest-tool"
 
-# - debug: msg="the current date is {{ current_build_time_epoch.stdout }}"
+- debug: msg="the current date is {{ current_build_time_epoch.stdout }}"
+- debug: msg="your mbed cloud api key is {{ mbed_cloud_api_key.stdout }}"
+- debug: msg="your mbed cloud api endpoint is {{ mbed_cloud_api_endpoint.stdout }}"
 
 - name: mbed Dev | Dump manifest data to /vagrant/FRDM-K64F-QS-MANIFEST-DATA-{{ current_build_time_epoch.stdout }}.json
   shell: jq '. | {"json":.}' .manifest_tool.json | jq ".\"pem\"=\"$(cat .update-certificates/default.key.pem)\"" | jq ".\"der\"=\"$(base64 -w0 .update-certificates/default.der)\"" | sponge "/vagrant/FRDM-K64F-QS-MANIFEST-DATA-{{ current_build_time_epoch.stdout }}.json"
@@ -130,7 +132,6 @@
   shell: /usr/local/bin/mbed compile -m K64F -t GCC_ARM >> mbed-cli-compile.log
   args:
     chdir: "{{ mbed_source_dir }}{{ mbed_repo_name }}"
-    # creates: mbed-cli-compile.log
 
 # You will end up with a combined bootload + firmware_app binary for the K64F
 # that will be copied to /vagrant/FRDM-K64F-RED.bin
@@ -139,11 +140,6 @@
   shell: python combine_bootloader_with_app.py -s 0 --header-offset 0x20000 --app-offset 0x20400 -b mbed-bootloader-k64f.bin -a ../BUILD/K64F/GCC_ARM/mbed-cloud-client-example-sources-internal.bin -o /vagrant/FRDM-K64F-RED-{{ current_build_time_epoch.stdout }}.bin
   args:
     chdir: "{{ mbed_source_dir }}{{ mbed_repo_name }}/tools"
-
-# build GREEN.bin
-# copy to dir
-# upload to mbed Cloud and save location in green.url
-# create manifest manifest-tool create -u <url> -p <payload> -o <manifest file>
 
 - name: mbed Dev | Change LED blink color to GREEN in binary
   lineinfile:
@@ -156,26 +152,9 @@
   shell: /usr/local/bin/mbed compile -m K64F -t GCC_ARM >> mbed-cli-compile.log
   args:
     chdir: "{{ mbed_source_dir }}{{ mbed_repo_name }}"
-    # creates: mbed-cli-compile.log
 
 - name: mbed Dev | Copy green.bin to /vagrant
   shell: cp {{ mbed_source_dir }}{{ mbed_repo_name }}/BUILD/K64F/GCC_ARM/mbed-cloud-client-example-sources-internal.bin /vagrant/FRDM-K64F-GREEN-{{ current_build_time_epoch.stdout }}.bin
-
-# Upload green.bin with cURL and save resource path to green.json
-
-# Generate a manifest with green.bin url and copy to /vagrant/FRDM-K64F-GREEN.manifest
-
-# Upload green.manifest with cURL to mbed Cloud
-
-# Create green filter with cURL to mbed Cloud
-
-# Create green campaign with cURL to mbed Cloud
-
-# build BLUE.bin
-# copy to dir
-# upload to mbed Cloud
-# upload to mbed Cloud and save location in blue.url
-# create manifest manifest-tool create -u <url> -p <payload> -o <manifest file>
 
 - name: mbed Dev | Change LED blink color to BLUE in binary
   lineinfile:
@@ -188,7 +167,6 @@
   shell: /usr/local/bin/mbed compile -m K64F -t GCC_ARM >> mbed-cli-compile.log
   args:
     chdir: "{{ mbed_source_dir }}{{ mbed_repo_name }}"
-    # creates: mbed-cli-compile.log
 
 - name: mbed Dev | Copy blue.bin to /vagrant
   shell: cp {{ mbed_source_dir }}{{ mbed_repo_name }}/BUILD/K64F/GCC_ARM/mbed-cloud-client-example-sources-internal.bin /vagrant/FRDM-K64F-BLUE-{{ current_build_time_epoch.stdout }}.bin
@@ -205,4 +183,4 @@
 
 # Create blue campaign with cURL to mbed Cloud with image ID
 
-# Start blue and green campaigns
+# Start# blue and green campaigns

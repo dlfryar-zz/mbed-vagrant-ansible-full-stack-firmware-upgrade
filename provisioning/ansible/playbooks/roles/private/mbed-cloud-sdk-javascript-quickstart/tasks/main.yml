@@ -33,7 +33,7 @@
   replace:
     dest: mbed-cloud-sdk-javascript-quickstart/node_modules/mbed-cloud-sdk/lib/common/apiBase.js
     regexp: 'http:\/\/api.mbedcloud.com'
-    replace: 'https:\/\/api.us-east-1.mbedcloud.com'
+    replace: "{{ mbed_cloud_api_endpoint }}"
     backup: no
 
 - name: mbed Cloud JavaScript App | copy rc.local startup script
