@@ -1,4 +1,4 @@
-- name: Common | Get spoch time from local system
+- name: Common | Get epoch time from local system
   shell: date +%s
   register: current_build_time_epoch
   run_once: true
