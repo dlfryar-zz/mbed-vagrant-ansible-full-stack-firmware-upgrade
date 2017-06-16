@@ -40,13 +40,20 @@
 
 # jq is needed to edit JSON structs from the command line
 # moreutils contains sponge which can do inplace edits
-- name: Common | Install common utilities with apt
-  apt: state=latest pkg=vim,most,tree,git,curl,wget,unzip,jq,moreutils
-  become: yes
-  become_method: sudo
-
-- name: Common | Install libssl-dev for manifest tool
-  apt: state=latest pkg=libssl-dev
+- name: Common | Install packages with apt
+  apt: name={{item}} state=installed
+  with_items:
+       - python-pip
+       - libssl-dev
+       - vim
+       - most
+       - tree
+       - git
+       - curl
+       - wget
+       - unzip
+       - jq
+       - moreutils
   become: yes
   become_method: sudo
 

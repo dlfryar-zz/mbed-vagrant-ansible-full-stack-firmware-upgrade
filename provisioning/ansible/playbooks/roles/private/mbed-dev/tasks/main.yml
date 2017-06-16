@@ -1,7 +1,7 @@
 ---
 # tasks file for mbed-dev
-- name: mbed Dev | Install Mercurial, Python Pip
-  apt: state=latest pkg=mercurial,python-pip
+- name: mbed Dev | Install Mercurial
+  apt: state=latest pkg=mercurial
   become: yes
   become_method: sudo
 
