@@ -48,16 +48,6 @@
 
 Connect the Ethernet port on the FRDM-K64F to your switch or router.
 
-If you are behind a NAT'ed device then you must open the CoAP ports
-on your router in order for this to work.
-
-Virtual Servers / Port Forwarding
-
-| Description | Inbound Port | Type | Private IP Address | Local Port |
-| ----------- | ------------ | ---- | ------------------ | ---------- |
-|  FRDM-K64F  |  5683-5684   | Both |    192.168.0.18    | 5683-5684  |
-
-
 ### Flash the firmware
 
 Copy the firmware binary that was built to the FRDM-K64F board in order
