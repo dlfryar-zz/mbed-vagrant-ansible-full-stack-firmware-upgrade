@@ -45,6 +45,11 @@
   become: yes
   become_method: sudo
 
+- name: Common | Install libssl-dev for manifest tool
+  apt: state=latest pkg=libssl-dev
+  become: yes
+  become_method: sudo
+
 - name: Common | Add github to our known_hosts
   shell: ssh-keyscan -H github.com > .ssh/known_hosts
 

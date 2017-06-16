@@ -15,11 +15,6 @@
   become: yes
   become_method: sudo
 
-- name: mbed Dev | Install libssl-dev for manifest tool
-  apt: state=latest pkg=libssl-dev
-  become: yes
-  become_method: sudo
-
 - name: mbed Dev | Clone the mbed manifest tool
   git:
     version: 'master'
@@ -173,14 +168,45 @@
 
 # Upload blue.bin with cURL and save resource path to blue.json and save image location and ID
 
-# Generate a manifest with blue.bin url and copy to /vagrant/FRDM-K64F-BLUE.manifest
+# - name: mbed Dev | POST mbedcloud/v3/firmware-images upload firmware
+#   shell: curl -s -X POST https://api.us-east-1.mbedcloud.com/v3/firmware-images/ -H 'authorization:Bearer "{{ mbed_cloud_api_key }}"' -H 'content-type:multipart/form-data' -F datafile=@FRDM-K64F-GREEN-1497573263.bin -F name=FRDM-K64F-GREEN-1497573263.bin > post-image-response-{{ current_build_time_epoch.stdout }}.json
+
+# - name: Dump base64 binary
+#   slurp:
+#     src: FRDM-K64F-GREEN-1497573263.bin
+#   register: file_payload
+
+# - debug:
+#     msg: "{{ file_payload['content'] | b64decode -w0 }}"
+
+# - name: mbed Dev | POST mbedcloud/v3/firmware-images upload firmware
+#   uri:
+#     url: https://api.us-east-1.mbedcloud.com/v3/firmware-images/
+#     method: POST
+#     body: "datafile={{ lookup('file', FRDM-K64F-GREEN-1497573263.bin) }}&name=FRDM-K64F-GREEN-1497573263.bin"
+#     headers:
+#       authorization: "Bearer {{ mbed_cloud_api_key }}"
+#       content-type: multipart/form-data
+#     status_code: 201
+#     body_format: raw
+#     return_content: yes
+
+# Create a manifest by pulling out the datafile from the results.json
+
+# manifest-tool create -u $(jq '.datafile' /vagrant/post-image.json) -p /vagrant/FRDM-K64F-RED-1497573263.bin -o manifest.file
+
+# cp manifest.file /vagrant
 
 # Upload blue.manifest with cURL to mbed Cloud and save manifest resource ID
 
-# Add custom_attributes to devices connected
+# curl -s -X POST https://api.us-east-1.mbedcloud.com/v3/firmware-manifests/ -H 'authorization: Bearer {{ mbed_cloud_api_key }}' -H 'content-type: multipart/form-data' -F datafile=@manifest.file -F name=mymanifestname > post-manifest.json
 
 # Create blue filter with cURL to mbed Cloud based on custom_attributes
 
+# curl -s -X POST https://api.us-east-1.mbedcloud.com/v3/device-queries/ -H 'authorization: Bearer {{ mbed_cloud_api_key }}' -H 'content-type: application/json' -d '{"name": "my_filter_name","query": "description=my_filter_description&id=015cac1279560000000000010010036d"}' > post-filter.json
+
 # Create blue campaign with cURL to mbed Cloud with image ID
 
-# Start# blue and green campaigns
+# curl -X POST https://api.us-east-1.mbedcloud.com/v3/update-campaigns/ -H 'authorization: Bearer {{ mbed_cloud_api_key }}' -H 'content-type: application/json' -d '{"name": "my update campaign name","device_filter": "name=my_filter_name","description": "my update campaign description","state": "draft","root_manifest_id": "015caea4b2e10000000000010010015d","root_manifest_url": "http://firmware-catalog-media-ca57.s3.amazonaws.com/manifest.file"}' > post-campaign.json
+
+# Add custom_attributes to devices connected
