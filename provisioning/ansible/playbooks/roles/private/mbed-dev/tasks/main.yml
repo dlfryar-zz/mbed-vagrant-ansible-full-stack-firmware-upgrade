@@ -194,7 +194,6 @@
   shell: cp {{ mbed_source_dir }}{{ mbed_repo_name }}/BUILD/K64F/GCC_ARM/mbed-cloud-client-example-sources-internal.bin /vagrant/FRDM-K64F-BLUE-{{ current_build_time_epoch.stdout }}.bin
 
 # Upload blue.bin with cURL and save resource path to blue.json and save image location and ID
-# curl -X POST https://api.us-east-1.mbedcloud.com/v3/firmware-images/ -H 'authorization: Bearer ak_1MDE1ODc3OGRhNTYwMDI0MjBhMDE0YzExMDAwMDAwMDA0159d7f1c2c002420a015e0600000000pzg5XIIekzquoRswJTlDSGCepTbAvEL1' -H 'cache-control: no-cache' -H 'content-type: multipart/form-data' -F datafile=@FRDM-K64F-RED-1497567334.bin -F name=FRDM-K64F-RED-1497567334.bin
 
 # Generate a manifest with blue.bin url and copy to /vagrant/FRDM-K64F-BLUE.manifest
 
