@@ -25,17 +25,17 @@
         }
 
     mbed_cloud_dev_credentials.c
-        https://github.com/ARMmbed/mbed-cloud-client-example/blob/master/README.md#client-credentials
-        Follow the instructions here to generate an production/mbed_cloud_dev_credentials.c and place it in your
-        ~/Downloads folder Copy production/mbed_cloud_dev_credentials.c which you obtained from
-        https://portal.mbedcloud.com/Developer tools/Certificate
 
+        https://github.com/ARMmbed/mbed-cloud-client-example/blob/master/README.md#client-credentials
+
+        Copy production/mbed_cloud_dev_credentials.c which you obtained from "https://portal.mbedcloud.com/Developer tools/Certificate"
+
+        ~/Downloads/testing/mbedcloud/1.2/production/mbed_cloud_dev_credentials.c
 
     .netrc - this is needed to access private repos on GitHub
         machine github.com
         login your_username_here
         password your_password_here
-
 
 ### Start up the environment
    
@@ -64,7 +64,7 @@ Now watch for connection messages once the board comes back up
 
 ### Test it out!
 
-Point your browser to http://localhost:8000
+Point your browser to http://localhost:8080
 
 This is a NodeJS application server running on a virtual machine on
 your computer.  It's the one called server if you were to list the VM's
