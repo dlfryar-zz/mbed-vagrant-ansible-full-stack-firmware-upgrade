@@ -7,7 +7,7 @@
     dest: "/home/{{ ansible_env.USER }}/Downloads/manifest-tool-restricted"
     update: no
 
-- name: mbed Dev | Install the mbed manifest tool with PIP
+- name: mbed Dev | Install the mbed manifest tool with python-pip
   shell: pip install .
   args:
     chdir: "/home/{{ ansible_env.USER }}/Downloads/manifest-tool-restricted"
@@ -33,9 +33,6 @@
 
 - name: mbed Cloud JavaScript App | Create dotfile with mbed cloud creds
   template: dest="mbed-cloud-sdk-javascript-quickstart/.env" owner="{{ ansible_env.USER }}" group="{{ ansible_env.USER }}" mode=0600 src=envdotfile.j2
-
-- name: mbed Cloud JavaScript App | Stuff the mbedcloud creds in the dotfile
-  shell: grep MBED_CLOUD_API_KEY .mbedcloud | sed 's/MBED_CLOUD_API_KEY/ACCESS_KEY/' >> mbed-cloud-sdk-javascript-quickstart/.env
 
 - name: mbed Cloud JavaScript App | Install NPM dependencies
   npm:
