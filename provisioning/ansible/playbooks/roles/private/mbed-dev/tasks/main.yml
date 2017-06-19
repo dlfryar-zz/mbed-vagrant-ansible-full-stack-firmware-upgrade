@@ -73,7 +73,7 @@
 
 - name: mbed Dev | Clone correct PAL
   git:
-    version: 'origin/mbedOS5.5'
+    version: 'ccbffd39ac2634444ec3cbadb7d99e66939044b1'
     accept_hostkey: yes
     force: yes
     repo: git@github.com:ARMmbed/mbed-client-pal.git
@@ -117,7 +117,7 @@
   args:
     chdir: "{{ mbed_source_dir }}{{ mbed_repo_name }}"
 
-- name: mbed Dev | DIsable mbed-trace.enable in mbed_app.json
+- name: mbed Dev | Disable mbed-trace.enable in mbed_app.json
   shell: jq '.target_overrides."*"."mbed-trace.enable" = 0' mbed_app.json | sponge mbed_app.json
   args:
     chdir: "{{ mbed_source_dir }}{{ mbed_repo_name }}"
