@@ -39,9 +39,9 @@
   args:
     chdir: "/home/{{ ansible_env.USER }}/Downloads/manifest-tool"
 
-- debug: msg="the current date is {{ current_build_time_epoch.stdout }}"
-- debug: msg="your mbed cloud api key is {{ mbed_cloud_api_key.stdout }}"
-- debug: msg="your mbed cloud api endpoint is {{ mbed_cloud_api_endpoint.stdout }}"
+- debug: msg="the current date is {{ current_build_time_epoch }}"
+- debug: msg="your mbed cloud api key is {{ mbed_cloud_api_key.stdout.strip('""') }}"
+- debug: msg="your mbed cloud api endpoint is {{ mbed_cloud_api_endpoint.stdout.strip('""') }}"
 
 - name: mbed Dev | Dump manifest data to /vagrant/FRDM-K64F-QS-MANIFEST-DATA-{{ current_build_time_epoch.stdout }}.json
   shell: jq '. | {"json":.}' .manifest_tool.json | jq ".\"pem\"=\"$(cat .update-certificates/default.key.pem)\"" | jq ".\"der\"=\"$(base64 -w0 .update-certificates/default.der)\"" | sponge "/vagrant/FRDM-K64F-QS-MANIFEST-DATA-{{ current_build_time_epoch.stdout }}.json"
@@ -117,6 +117,11 @@
   args:
     chdir: "{{ mbed_source_dir }}{{ mbed_repo_name }}"
 
+- name: mbed Dev | DIsable mbed-trace.enable in mbed_app.json
+  shell: jq '.target_overrides."*"."mbed-trace.enable" = 0' mbed_app.json | sponge mbed_app.json
+  args:
+    chdir: "{{ mbed_source_dir }}{{ mbed_repo_name }}"
+
 # This is only needed because we updated the PAL
 - name: mbed Dev | Update mbed client repo with library dependencies
   shell: /usr/local/bin/mbed update
@@ -168,8 +173,6 @@
 
 # Upload blue.bin with cURL and save resource path to blue.json and save image location and ID
 
-# - name: mbed Dev | POST mbedcloud/v3/firmware-images upload firmware
-#   shell: curl -s -X POST https://api.us-east-1.mbedcloud.com/v3/firmware-images/ -H 'authorization:Bearer "{{ mbed_cloud_api_key }}"' -H 'content-type:multipart/form-data' -F datafile=@FRDM-K64F-GREEN-1497573263.bin -F name=FRDM-K64F-GREEN-1497573263.bin > post-image-response-{{ current_build_time_epoch.stdout }}.json
 
 # - name: Dump base64 binary
 #   slurp:
@@ -185,28 +188,49 @@
 #     method: POST
 #     body: "datafile={{ lookup('file', FRDM-K64F-GREEN-1497573263.bin) }}&name=FRDM-K64F-GREEN-1497573263.bin"
 #     headers:
-#       authorization: "Bearer {{ mbed_cloud_api_key }}"
+#       authorization: "Bearer {{ mbed_cloud_api_key.stdout.strip('""') }}"
 #       content-type: multipart/form-data
 #     status_code: 201
 #     body_format: raw
 #     return_content: yes
 
-# Create a manifest by pulling out the datafile from the results.json
+########## GREEN
+# - name: mbed Dev | POST mbedcloud/v3/firmware-images upload firmware
+#   shell: curl -s -X POST https://api.us-east-1.mbedcloud.com/v3/firmware-images/ -H 'authorization:Bearer "{{ mbed_cloud_api_key.stdout.strip('""') }}.stdout"' -H 'content-type:multipart/form-data' -F datafile=@/vagrant/FRDM-K64F-GREEN-{{ current_build_time_epoch.stdout }}.bin -F name=FRDM-K64F-GREEN-{{ current_build_time_epoch.stdout }}.bin > post-image-response-{{ current_build_time_epoch.stdout }}.json
+#   args:
+#     chdir: /home/{{ ansible_env.USER }}/Downloads
 
-# manifest-tool create -u $(jq '.datafile' /vagrant/post-image.json) -p /vagrant/FRDM-K64F-RED-1497573263.bin -o manifest.file
+# - name: mbed Dev | Create a manifest by pulling out the datafile from the results.json
+#   shell: manifest-tool create -u $(jq '.datafile' /vagrant/post-image.json) -p /vagrant/FRDM-K64F-GREEN-{{ current_build_time_epoch.stdout.strip('""') }}.bin -o FRDM-K64F-GREEN-{{ current_build_time_epoch.stdout }}.manifest
+#   args:
+#     chdir: /home/{{ ansible_env.USER }}/Downloads/
 
-# cp manifest.file /vagrant
+# - name: mbed Dev | Upload green manifest with cURL to mbed Cloud and save manifest resource ID
+#   shell: curl -s -X POST https://api.us-east-1.mbedcloud.com/v3/firmware-manifests/ -H 'authorization: Bearer {{ mbed_cloud_api_key.stdout.strip('""') }}' -H 'content-type: multipart/form-data' -F datafile=@FRDM-K64F-GREEN-{{ current_build_time_epoch.stdout }}.manifest -F name=FRDM-K64F-GREEN-{{ current_build_time_epoch.stdout }}.manifest > post-manifest-{{ current_build_time_epoch.stdout }}.json
+#   args:
+#     chdir: /home/{{ ansible_env.USER }}/Downloads
 
-# Upload blue.manifest with cURL to mbed Cloud and save manifest resource ID
-
-# curl -s -X POST https://api.us-east-1.mbedcloud.com/v3/firmware-manifests/ -H 'authorization: Bearer {{ mbed_cloud_api_key }}' -H 'content-type: multipart/form-data' -F datafile=@manifest.file -F name=mymanifestname > post-manifest.json
+# curl -s -X POST https://api.us-east-1.mbedcloud.com/v3/firmware-manifests/ -H 'authorization: Bearer {{ mbed_cloud_api_key.stdout.strip('""') }}' -H 'content-type: multipart/form-data' -F datafile=@FRDM-K64F-GREEN-{{ current_build_time_epoch.stdout }}.manifest -F name=FRDM-K64F-GREEN-{{ current_build_time_epoch.stdout }}.manifest > post-manifest-{{ current_build_time_epoch.stdout }}.json
 
 # Create blue filter with cURL to mbed Cloud based on custom_attributes
 
-# curl -s -X POST https://api.us-east-1.mbedcloud.com/v3/device-queries/ -H 'authorization: Bearer {{ mbed_cloud_api_key }}' -H 'content-type: application/json' -d '{"name": "my_filter_name","query": "description=my_filter_description&id=015cac1279560000000000010010036d"}' > post-filter.json
+# curl -s -X POST https://api.us-east-1.mbedcloud.com/v3/device-queries/ -H 'authorization: Bearer {{ mbed_cloud_api_key.stdout.strip('""') }}' -H 'content-type: application/json' -d '{"name": "my_filter_name","query": "description=my_filter_description&id=015cac1279560000000000010010036d"}' > post-filter-{{ current_build_time_epoch.stdout }}.json
 
 # Create blue campaign with cURL to mbed Cloud with image ID
 
-# curl -X POST https://api.us-east-1.mbedcloud.com/v3/update-campaigns/ -H 'authorization: Bearer {{ mbed_cloud_api_key }}' -H 'content-type: application/json' -d '{"name": "my update campaign name","device_filter": "name=my_filter_name","description": "my update campaign description","state": "draft","root_manifest_id": "015caea4b2e10000000000010010015d","root_manifest_url": "http://firmware-catalog-media-ca57.s3.amazonaws.com/manifest.file"}' > post-campaign.json
+# curl -X POST https://api.us-east-1.mbedcloud.com/v3/update-campaigns/ -H 'authorization: Bearer {{ mbed_cloud_api_key.stdout.strip('""') }}' -H 'content-type: application/json' -d '{"name": "my update campaign name","device_filter": "name=my_filter_name","description": "my update campaign description","state": "draft","root_manifest_id": "015caea4b2e10000000000010010015d","root_manifest_url": "http://firmware-catalog-media-ca57.s3.amazonaws.com/manifest.file"}' > post-campaign-{{ current_build_time_epoch.stdout }}.json
 
 # Add custom_attributes to devices connected
+
+
+########## BLUE
+
+# - name: mbed Dev | POST mbedcloud/v3/firmware-images upload firmware
+#   shell: curl -s -X POST https://api.us-east-1.mbedcloud.com/v3/firmware-images/ -H 'authorization:Bearer "{{ mbed_cloud_api_key.stdout.strip('""') }}"' -H 'content-type:multipart/form-data' -F datafile=@/vagrant/FRDM-K64F-BLUE-{{ current_build_time_epoch.stdout }}.bin -F name=FRDM-K64F-BLUE-{{ current_build_time_epoch.stdout }}.bin > post-image-response-{{ current_build_time_epoch.stdout }}.json
+#   args:
+#     chdir: /home/{{ ansible_env.USER }}/Downloads
+
+# - name: mbed Dev | Create a manifest by pulling out the datafile from the results.json
+#   shell: manifest-tool create -u $(jq '.datafile' /vagrant/post-image.json) -p /vagrant/FRDM-K64F-BLUE-{{ current_build_time_epoch.stdout }}.bin -o FRDM-K64F-BLUE-{{ current_build_time_epoch.stdout }}.manifest
+#   args:
+#     chdir: /home/{{ ansible_env.USER }}/Downloads
