@@ -47,12 +47,12 @@
     replace: "{{ mbed_cloud_api_endpoint }}"
     backup: no
 
-- name: mbed Cloud JavaScript App | Update the tty on the server app
-  replace:
-    dest: mbed-cloud-sdk-javascript-quickstart/app.js
-    regexp: '/dev/tty'
-    replace: '/dev/pts/0'
-    backup: no
+# - name: mbed Cloud JavaScript App | Update the tty on the server app
+#   replace:
+#     dest: mbed-cloud-sdk-javascript-quickstart/app.js
+#     regexp: '/dev/tty'
+#     replace: '/dev/pts/0'
+#     backup: no
     
 - name: mbed Cloud JavaScript App | copy rc.local startup script
   template: dest="/etc/rc.local" owner=root group=root mode=0755 src=rc.local.j2
