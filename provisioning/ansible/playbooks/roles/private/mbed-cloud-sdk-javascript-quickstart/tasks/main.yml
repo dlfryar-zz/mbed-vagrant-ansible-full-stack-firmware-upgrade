@@ -23,7 +23,7 @@
 
 - name: mbed Cloud JavaScript App | Get the mbed Cloud JS quickstart
   git:
-    version: 'firmware-updates'
+    version: 'master'
     accept_hostkey: yes
     force: yes
     repo: 'https://github.com/ARMmbed/mbed-cloud-sdk-javascript-quickstart'
@@ -38,21 +38,6 @@
   npm:
     path: mbed-cloud-sdk-javascript-quickstart
     state: latest
-#  become_user: "{{ ansible_env.USER }}"
-
-- name: mbed Cloud JavaScript App | Change the endpoint to 1.2 by patching NodeJS SDK
-  replace:
-    dest: mbed-cloud-sdk-javascript-quickstart/node_modules/mbed-cloud-sdk/lib/common/apiBase.js
-    regexp: 'http:\/\/api.mbedcloud.com'
-    replace: "{{ mbed_cloud_api_endpoint }}"
-    backup: no
-
-# - name: mbed Cloud JavaScript App | Update the tty on the server app
-#   replace:
-#     dest: mbed-cloud-sdk-javascript-quickstart/app.js
-#     regexp: '/dev/tty'
-#     replace: '/dev/pts/0'
-#     backup: no
     
 - name: mbed Cloud JavaScript App | copy rc.local startup script
   template: dest="/etc/rc.local" owner=root group=root mode=0755 src=rc.local.j2
