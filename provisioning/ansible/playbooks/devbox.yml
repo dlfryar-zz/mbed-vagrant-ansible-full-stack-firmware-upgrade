@@ -3,4 +3,4 @@
   roles:
     - role: private/common
     - role: private/mbed-cloud-fota
-    - role: private/mbed-dev
+    # - role: private/mbed-dev
