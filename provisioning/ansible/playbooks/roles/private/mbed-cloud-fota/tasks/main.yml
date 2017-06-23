@@ -1,64 +1,24 @@
-- name: mbed-cloud-fota | Clone the mbed manifest tool
-  git:
-    version: 'master'
-    accept_hostkey: yes
-    force: yes
-    repo: https://github.com/ARMmbed/manifest-tool-restricted.git
-    dest: "/home/{{ ansible_env.USER }}/Downloads/manifest-tool-restricted"
-    update: no
-
-- name: mbed-cloud-fota | Patch up the manifest tool for Ansible
-  replace:
-    path: "/home/{{ ansible_env.USER }}/Downloads/manifest-tool-restricted/manifesttool/create.py"
-    regexp: 'if not options.input_file.isatty():'
-    replace: 'if options.input_file.isatty():'
-    backup: no
-
-- name: mbed-cloud-fota | Patch up the system manifest tool for Ansible
-  replace:
-    path: "/usr/local/lib/python2.7/dist-packages/manifesttool/create.py"
-    regexp: 'if not options.input_file.isatty\(\)\:'
-    replace: 'if options.input_file.isatty():'
-    backup: no
-  become: yes
-  become_method: sudo
-
-- name: mbed-cloud-fota | Install the mbed manifest tool with PIP
-  shell: pip install .
-  args:
-    chdir: "/home/{{ ansible_env.USER }}/Downloads/manifest-tool-restricted"
-  become: yes
-  become_method: sudo
-
-- name: mbed-cloud-fota | Initialize the manifest tool
-  shell: manifest-tool init -d "mbed-quickstart-company" -m "FRDM-K64F" -q --force
-
-- name: mbed-cloud-fota | Dump manifest data to /vagrant/FRDM-K64F-QS-MANIFEST-DATA-{{ current_build_time_epoch.stdout }}.json
-  shell: jq '. | {"json":.}' .manifest_tool.json | jq ".\"pem\"=\"$(cat .update-certificates/default.key.pem)\"" | jq ".\"der\"=\"$(base64 -w0 .update-certificates/default.der)\"" | sponge "/vagrant/FRDM-K64F-QS-MANIFEST-DATA-{{ current_build_time_epoch.stdout }}.json"
-
 ##### UPLOAD GREEN IMAGE
  
 - name: mbed-cloud-fota | POST mbedcloud/v3/firmware-images upload firmware
-  shell: curl -s -X POST https://api.us-east-1.mbedcloud.com/v3/firmware-images/ -H 'authorization:Bearer {{ mbed_cloud_api_key.stdout.strip('\"') }}' -H 'content-type:multipart/form-data' -F datafile=@/vagrant/FRDM-K64F-GREEN-1498144554.bin -F name=FRDM-K64F-GREEN-1498144554.bin > post-image-response-1498144554.json
+  shell: curl -s -X POST https://api.us-east-1.mbedcloud.com/v3/firmware-images/ -H 'authorization:Bearer {{ mbed_cloud_api_key.stdout.strip('\"') }}' -H 'content-type:multipart/form-data' -F datafile=@/vagrant/FRDM-K64F-GREEN-{{ current_build_time_epoch.stdout }}.bin -F name=FRDM-K64F-GREEN-{{ current_build_time_epoch.stdout }}.bin > post-image-response-{{ current_build_time_epoch.stdout }}.json
 
 ##### CREATE GREEN MANIFEST
 
 - name: mbed-cloud-fota | Get green image url
-  command: jq -r '.datafile' post-image-response-1498144554.json
-  args:
-    chdir: /home/{{ ansible_env.USER }}/Downloads/
+  command: jq -r '.datafile' post-image-response-{{ current_build_time_epoch.stdout }}.json
   register: green_image_url
 
 - name: mbed-cloud-fota | Create a manifest by pulling out the datafile from the results.json
-  command: manifest-tool create -u {{ green_image_url.stdout }} -p /vagrant/FRDM-K64F-GREEN-1498144554.bin -o FRDM-K64F-GREEN-1498144554.manifest
+  command: manifest-tool create -u {{ green_image_url.stdout }} -p /vagrant/FRDM-K64F-GREEN-{{ current_build_time_epoch.stdout }}.bin -o FRDM-K64F-GREEN-{{ current_build_time_epoch.stdout }}.manifest
 
 - name: mbed-cloud-fota | Copy green manifest to /vagrant
-  shell: cp FRDM-K64F-GREEN-1498144554.manifest /vagrant/
+  shell: cp FRDM-K64F-GREEN-{{ current_build_time_epoch.stdout }}.manifest /vagrant/
 
 ##### UPLOAD GREEN MANIFEST
 
 - name: mbed-cloud-fota | Upload green manifest with cURL to mbed Cloud and save manifest resource ID
-  shell: curl -s -X POST https://api.us-east-1.mbedcloud.com/v3/firmware-manifests/ -H 'authorization:Bearer {{ mbed_cloud_api_key.stdout.strip('\"') }}' -H 'content-type:multipart/form-data' -F datafile=@/vagrant/FRDM-K64F-GREEN-1498144554.manifest -F name=FRDM-K64F-GREEN-1498144554.manifest > post-manifest-1498144554.json
+  shell: curl -s -X POST https://api.us-east-1.mbedcloud.com/v3/firmware-manifests/ -H 'authorization:Bearer {{ mbed_cloud_api_key.stdout.strip('\"') }}' -H 'content-type:multipart/form-data' -F datafile=@/vagrant/FRDM-K64F-GREEN-{{ current_build_time_epoch.stdout }}.manifest -F name=FRDM-K64F-GREEN-{{ current_build_time_epoch.stdout }}.manifest > post-manifest-{{ current_build_time_epoch.stdout }}.json
 
 ##### CREATE GENERAL UPDATE FILTER
 
@@ -70,22 +30,22 @@
   template: dest="/home/{{ ansible_env.USER }}/FRDM-K64F-GREEN-FILTER-BODY.json" owner="{{ ansible_env.USER }}" group="{{ ansible_env.USER }}" mode=0600 src=FRDM-K64F-GREEN-FILTER-BODY.json.j2
 
 - name: mbed-cloud-fota | Create green device filter and save response
-  shell: curl -s -X POST https://api.us-east-1.mbedcloud.com/v3/device-queries/ -H 'authorization:Bearer {{ mbed_cloud_api_key.stdout.strip('\"') }}' -H 'content-type:application/json' --data @FRDM-K64F-GREEN-FILTER-BODY.json > post-filter-1498144554.json
+  shell: curl -s -X POST https://api.us-east-1.mbedcloud.com/v3/device-queries/ -H 'authorization:Bearer {{ mbed_cloud_api_key.stdout.strip('\"') }}' -H 'content-type:application/json' --data @FRDM-K64F-GREEN-FILTER-BODY.json > post-filter-{{ current_build_time_epoch.stdout }}.json
 
 ##### CREATE GREEN UPDATE CAMPAIGN
 - name: mbed-cloud-fota | Get green manifest id
-  command: jq -r '.id' post-manifest-1498144554.json
+  command: jq -r '.id' post-manifest-{{ current_build_time_epoch.stdout }}.json
   register: green_manifest_id
 
 - name: mbed-cloud-fota | Get green manifest url
-  command: jq -r '.datafile' post-manifest-1498144554.json
+  command: jq -r '.datafile' post-manifest-{{ current_build_time_epoch.stdout }}.json
   register: green_manifest_url
 
 - name: mbed-cloud-fota | Create green campaign json struct
   template: dest="/home/{{ ansible_env.USER }}/FRDM-K64F-GREEN-CAMPAIGN-BODY.json" owner="{{ ansible_env.USER }}" group="{{ ansible_env.USER }}" mode=0600 src=FRDM-K64F-GREEN-CAMPAIGN-BODY.json.j2
 
 - name: mbed-cloud-fota | Create green campaign and save response
-  shell: curl -s -X POST https://api.us-east-1.mbedcloud.com/v3/update-campaigns/ -H 'authorization:Bearer {{ mbed_cloud_api_key.stdout.strip('\"') }}' -H 'content-type:application/json' --data @FRDM-K64F-GREEN-CAMPAIGN-BODY.json > post-campaign-1498144554.json
+  shell: curl -s -X POST https://api.us-east-1.mbedcloud.com/v3/update-campaigns/ -H 'authorization:Bearer {{ mbed_cloud_api_key.stdout.strip('\"') }}' -H 'content-type:application/json' --data @FRDM-K64F-GREEN-CAMPAIGN-BODY.json > post-campaign-{{ current_build_time_epoch.stdout }}.json
 
 ########## BLUE
 

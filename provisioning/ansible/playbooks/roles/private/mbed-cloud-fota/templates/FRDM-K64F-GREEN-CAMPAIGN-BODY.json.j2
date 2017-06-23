@@ -1,7 +1,7 @@
 {
   "root_manifest_id": "{{ green_manifest_id.stdout }}",
   "root_manifest_url": "{{ green_manifest_url.stdout }}",
-  "name": "FRDM-K64F-GREEN-1498144554 Campaign",
-  "device_filter": "name=FRDM-K64F-GREEN-1498144554 Filter",
+  "name": "FRDM-K64F-GREEN-{{ current_build_time_epoch.stdout }} Campaign",
+  "device_filter": "name=FRDM-K64F-GREEN-{{ current_build_time_epoch.stdout }} Filter",
   "state": "scheduled"
 }
