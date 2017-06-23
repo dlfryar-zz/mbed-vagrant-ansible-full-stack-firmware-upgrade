@@ -46,6 +46,8 @@
        - unzip
        - jq
        - moreutils
+       - linux-image-extra-virtual
+       - usbmount
   become: yes
   become_method: sudo
 
