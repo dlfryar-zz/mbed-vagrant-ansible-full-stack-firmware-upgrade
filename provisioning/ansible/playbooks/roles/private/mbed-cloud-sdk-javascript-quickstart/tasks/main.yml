@@ -34,6 +34,13 @@
 - name: mbed Cloud JavaScript App | Create dotfile with mbed cloud creds
   template: dest="mbed-cloud-sdk-javascript-quickstart/.env" owner="{{ ansible_env.USER }}" group="{{ ansible_env.USER }}" mode=0600 src=envdotfile.j2
 
+- name: mbed Cloud JavaScript App | Change the endpoint to 1.2 by patching NodeJS SDK
+  replace:
+    dest: mbed-cloud-sdk-javascript-quickstart/node_modules/mbed-cloud-sdk/lib/common/apiBase.js
+    regexp: 'http:\/\/api.mbedcloud.com'
+    replace: "{{ mbed_cloud_api_endpoint }}"
+    backup: no
+
 - name: mbed Cloud JavaScript App | Install NPM dependencies
   npm:
     path: mbed-cloud-sdk-javascript-quickstart
