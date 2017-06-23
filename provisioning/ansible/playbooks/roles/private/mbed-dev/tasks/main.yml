@@ -123,7 +123,7 @@
     chdir: "{{ mbed_source_dir }}{{ mbed_repo_name }}"
 
 - name: mbed Dev | Disable mbed-trace.enable in mbed_app.json
-  shell: jq '.target_overrides."*"."mbed-trace.enable" = 1' mbed_app.json | sponge mbed_app.json
+  shell: jq '.target_overrides."*"."mbed-trace.enable" = 0' mbed_app.json | sponge mbed_app.json
   args:
     chdir: "{{ mbed_source_dir }}{{ mbed_repo_name }}"
 
