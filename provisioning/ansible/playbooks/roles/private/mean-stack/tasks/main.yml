@@ -10,20 +10,21 @@
   become: yes
   become_method: sudo
 
-- name: MongoDB | install
-  apt: pkg=mongodb-org state=present
-  notify: MongoDB | Ensure that MongoDB is running
-  become: yes
-  become_method: sudo
+# Currently don't use Mongo
+# - name: MongoDB | install
+#   apt: pkg=mongodb-org state=present
+#   notify: MongoDB | Ensure that MongoDB is running
+#   become: yes
+#   become_method: sudo
 
-- name: MongoDB | create service link systemd
-  file:
-    src: /lib/systemd/system/mongod.service
-    dest: /etc/systemd/system/mongodb.service
-    state: link
-  notify: MongoDB | Ensure that MongoDB is running
-  become: yes
-  become_method: sudo
+# - name: MongoDB | create service link systemd
+#   file:
+#     src: /lib/systemd/system/mongod.service
+#     dest: /etc/systemd/system/mongodb.service
+#     state: link
+#   notify: MongoDB | Ensure that MongoDB is running
+#   become: yes
+#   become_method: sudo
 
 - name: Node.js | Get script
   get_url:

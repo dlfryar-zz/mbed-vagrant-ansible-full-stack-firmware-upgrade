@@ -2,7 +2,6 @@
   "root_manifest_id": "{{ green_manifest_id.stdout }}",
   "root_manifest_url": "{{ green_manifest_url.stdout }}",
   "name": "{{ current_build_time_epoch.stdout }}.FRDM-K64F.GREENLED.ansible_update Campaign",
-  "device_filter": "name={{ current_build_time_epoch.stdout }}.FRDM-K64F.GREENLED.ansible_update Filter",
-  "state": "scheduled",
-  "when": "2017-06-23T19:00:00.000000Z"
+  "device_filter": "state=bootstrapped&device_class={{ manifest_classid.stdout.replace("-", "") }}",
+  "state": "scheduled"
 }
