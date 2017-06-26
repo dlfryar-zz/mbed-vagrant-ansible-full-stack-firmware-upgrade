@@ -1,4 +1,5 @@
 {
-    "name": "FRDM-K64F-GREEN-{{ current_build_time_epoch.stdout }} Filter",
-    "query": "device_class={{ manifest_classid.stdout.replace("-", "") }}"
+    "name": "{{ current_build_time_epoch.stdout }}.FRDM-K64F.GREENLED.ansible_update Filter",
+    "query": "device_class={{ manifest_classid.stdout.replace("-", "") }}",
+    "state": "bootstrapped"
 }

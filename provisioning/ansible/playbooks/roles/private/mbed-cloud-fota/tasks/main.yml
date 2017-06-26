@@ -1,7 +1,7 @@
 ##### UPLOAD GREEN IMAGE
  
 - name: mbed-cloud-fota | POST mbedcloud/v3/firmware-images upload firmware
-  shell: curl -s -X POST https://api.us-east-1.mbedcloud.com/v3/firmware-images/ -H 'authorization:Bearer {{ mbed_cloud_api_key.stdout.strip('\"') }}' -H 'content-type:multipart/form-data' -F datafile=@/vagrant/FRDM-K64F-GREEN-{{ current_build_time_epoch.stdout }}.bin -F name=FRDM-K64F-GREEN-{{ current_build_time_epoch.stdout }}.bin > post-image-response-{{ current_build_time_epoch.stdout }}.json
+  shell: curl -s -X POST https://api.us-east-1.mbedcloud.com/v3/firmware-images/ -H 'authorization:Bearer {{ mbed_cloud_api_key.stdout.strip('\"') }}' -H 'content-type:multipart/form-data' -F datafile=@/vagrant/{{ current_build_time_epoch.stdout }}.FRDM-K64F.GREENLED.ansible_update.bin -F name={{ current_build_time_epoch.stdout }}.FRDM-K64F.GREENLED.ansible_update.bin > post-image-response-{{ current_build_time_epoch.stdout }}.json
 
 ##### CREATE GREEN MANIFEST
 
@@ -10,15 +10,15 @@
   register: green_image_url
 
 - name: mbed-cloud-fota | Create a manifest by pulling out the datafile from the results.json
-  command: manifest-tool create -u {{ green_image_url.stdout }} -p /vagrant/FRDM-K64F-GREEN-{{ current_build_time_epoch.stdout }}.bin -o FRDM-K64F-GREEN-{{ current_build_time_epoch.stdout }}.manifest
+  command: manifest-tool create -u {{ green_image_url.stdout }} -p /vagrant/{{ current_build_time_epoch.stdout }}.FRDM-K64F.GREENLED.ansible_update.bin -o {{ current_build_time_epoch.stdout }}.FRDM-K64F.GREENLED.ansible_update.manifest
 
 - name: mbed-cloud-fota | Copy green manifest to /vagrant
-  shell: cp FRDM-K64F-GREEN-{{ current_build_time_epoch.stdout }}.manifest /vagrant/
+  shell: cp {{ current_build_time_epoch.stdout }}.FRDM-K64F.GREENLED.ansible_update.manifest /vagrant/
 
 ##### UPLOAD GREEN MANIFEST
 
 - name: mbed-cloud-fota | Upload green manifest with cURL to mbed Cloud and save manifest resource ID
-  shell: curl -s -X POST https://api.us-east-1.mbedcloud.com/v3/firmware-manifests/ -H 'authorization:Bearer {{ mbed_cloud_api_key.stdout.strip('\"') }}' -H 'content-type:multipart/form-data' -F datafile=@/vagrant/FRDM-K64F-GREEN-{{ current_build_time_epoch.stdout }}.manifest -F name=FRDM-K64F-GREEN-{{ current_build_time_epoch.stdout }}.manifest > post-manifest-{{ current_build_time_epoch.stdout }}.json
+  shell: curl -s -X POST https://api.us-east-1.mbedcloud.com/v3/firmware-manifests/ -H 'authorization:Bearer {{ mbed_cloud_api_key.stdout.strip('\"') }}' -H 'content-type:multipart/form-data' -F datafile=@/vagrant/{{ current_build_time_epoch.stdout }}.FRDM-K64F.GREENLED.ansible_update.manifest -F name={{ current_build_time_epoch.stdout }}.FRDM-K64F.GREENLED.ansible_update.manifest > post-manifest-{{ current_build_time_epoch.stdout }}.json
 
 ##### CREATE GENERAL UPDATE FILTER
 

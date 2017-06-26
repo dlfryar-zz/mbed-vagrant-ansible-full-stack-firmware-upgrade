@@ -64,6 +64,9 @@
   register: mbed_cloud_api_endpoint
   run_once: true
 
-- debug: msg="the current date is {{ current_build_time_epoch }}"
+- debug: msg="the current date is {{ current_build_time_epoch.stdout }}"
 - debug: msg="your mbed cloud api key is {{ mbed_cloud_api_key.stdout.strip('""') }}"
 - debug: msg="your mbed cloud api endpoint is {{ mbed_cloud_api_endpoint.stdout.strip('""') }}"
+- debug: msg="the current epoch is {{ ansible_date_time.epoch }}"
+- debug: msg="the current iso8601 is {{ ansible_date_time.iso8601 }}"
+- debug: msg="the current iso8601_micro is {{ ansible_date_time.iso8601_micro }}"

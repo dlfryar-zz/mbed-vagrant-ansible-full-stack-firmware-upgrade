@@ -72,7 +72,7 @@
     version: 'master'
     accept_hostkey: yes
     force: yes
-    repo: https://github.com/ARMmbed/manifest-tool-restricted.git
+    repo: https://github.com/mray19027/manifest-tool-restricted.git
     dest: "/home/{{ ansible_env.USER }}/Downloads/manifest-tool-restricted"
     update: no
 
@@ -90,20 +90,22 @@
   become: yes
   become_method: sudo
 
-- name: mbed Dev | Patch up the SYSTEM manifest tool for Ansible
-  replace:
-    path: "/usr/local/lib/python2.7/dist-packages/manifesttool/create.py"
-    regexp: 'if not options.input_file.isatty\(\)\:'
-    replace: 'if options.input_file.isatty():'
-    backup: no
-  become: yes
-  become_method: sudo
+# Don't need this since we're using Michael's patched manifest-tool repo
+# https://github.com/mray19027/manifest-tool-restricted.git
+# - name: mbed Dev | Patch up the SYSTEM manifest tool for Ansible
+#   replace:
+#     path: "/usr/local/lib/python2.7/dist-packages/manifesttool/create.py"
+#     regexp: 'if not options.input_file.isatty\(\)\:'
+#     replace: 'if options.input_file.isatty():'
+#     backup: no
+#   become: yes
+#   become_method: sudo
 
 - name: mbed Dev | Initialize the manifest tool
   shell: manifest-tool init -d "mbed-quickstart-company" -m "FRDM-K64F" -q --force
 
-- name: mbed Dev | Dump manifest data to /vagrant/FRDM-K64F-QS-MANIFEST-DATA-{{ current_build_time_epoch.stdout }}.json
-  shell: jq '. | {"json":.}' .manifest_tool.json | jq ".\"pem\"=\"$(cat .update-certificates/default.key.pem)\"" | jq ".\"der\"=\"$(base64 -w0 .update-certificates/default.der)\"" | sponge "/vagrant/FRDM-K64F-QS-MANIFEST-DATA-{{ current_build_time_epoch.stdout }}.json"
+- name: mbed Dev | Dump manifest data to /vagrant/{{ current_build_time_epoch.stdout }}.FRDM-K64F.LED.qs_manifest_data.json
+  shell: jq '. | {"json":.}' .manifest_tool.json | jq ".\"pem\"=\"$(cat .update-certificates/default.key.pem)\"" | jq ".\"der\"=\"$(base64 -w0 .update-certificates/default.der)\"" | sponge "/vagrant/{{ current_build_time_epoch.stdout }}.FRDM-K64F.LED.qs_manifest_data.json"
 
 - name: mbed Dev | Copy update_default_resources.c from manifest dir
   shell: cp /home/{{ ansible_env.USER }}/update_default_resources.c {{ mbed_source_dir }}{{ mbed_repo_name }}
@@ -139,10 +141,10 @@
     chdir: "{{ mbed_source_dir }}{{ mbed_repo_name }}"
 
 # You will end up with a combined bootload + firmware_app binary for the K64F
-# that will be copied to /vagrant/FRDM-K64F-RED.bin
+# that will be copied to /vagrant/{{ current_build_time_epoch.stdout }}.FRDM-K64F.REDLED.ansible.bin
 # -s 0 sets the initial time to Unix epoch 1/1/1970 00:00.00
 - name: mbed Dev | Combine the bootloader and app to RED.bin
-  shell: python combine_bootloader_with_app.py -s 0 --header-offset 0x20000 --app-offset 0x20400 -b mbed-bootloader-k64f.bin -a ../BUILD/K64F/GCC_ARM/mbed-cloud-client-example-sources-internal.bin -o /vagrant/FRDM-K64F-RED-{{ current_build_time_epoch.stdout }}.bin
+  shell: python combine_bootloader_with_app.py -s 0 --header-offset 0x20000 --app-offset 0x20400 -b mbed-bootloader-k64f.bin -a ../BUILD/K64F/GCC_ARM/mbed-cloud-client-example-sources-internal.bin -o /vagrant/{{ current_build_time_epoch.stdout }}.FRDM-K64F.REDLED.bootloader.bin
   args:
     chdir: "{{ mbed_source_dir }}{{ mbed_repo_name }}/tools"
 
@@ -159,7 +161,7 @@
     chdir: "{{ mbed_source_dir }}{{ mbed_repo_name }}"
 
 - name: mbed Dev | Copy green.bin to /vagrant
-  shell: cp {{ mbed_source_dir }}{{ mbed_repo_name }}/BUILD/K64F/GCC_ARM/mbed-cloud-client-example-sources-internal.bin /vagrant/FRDM-K64F-GREEN-{{ current_build_time_epoch.stdout }}.bin
+  shell: cp {{ mbed_source_dir }}{{ mbed_repo_name }}/BUILD/K64F/GCC_ARM/mbed-cloud-client-example-sources-internal.bin /vagrant/{{ current_build_time_epoch.stdout }}.FRDM-K64F.GREENLED.ansible_update.bin
 
 - name: mbed Dev | Change LED blink color to BLUE in binary
   lineinfile:
@@ -174,4 +176,4 @@
     chdir: "{{ mbed_source_dir }}{{ mbed_repo_name }}"
 
 - name: mbed Dev | Copy blue.bin to /vagrant
-  shell: cp {{ mbed_source_dir }}{{ mbed_repo_name }}/BUILD/K64F/GCC_ARM/mbed-cloud-client-example-sources-internal.bin /vagrant/FRDM-K64F-BLUE-{{ current_build_time_epoch.stdout }}.bin
+  shell: cp {{ mbed_source_dir }}{{ mbed_repo_name }}/BUILD/K64F/GCC_ARM/mbed-cloud-client-example-sources-internal.bin /vagrant/{{ current_build_time_epoch.stdout }}.FRDM-K64F.BLUELED.quickstart_update.bin

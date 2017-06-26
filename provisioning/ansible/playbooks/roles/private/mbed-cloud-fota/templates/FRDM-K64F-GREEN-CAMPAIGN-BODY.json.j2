@@ -1,7 +1,8 @@
 {
   "root_manifest_id": "{{ green_manifest_id.stdout }}",
   "root_manifest_url": "{{ green_manifest_url.stdout }}",
-  "name": "FRDM-K64F-GREEN-{{ current_build_time_epoch.stdout }} Campaign",
-  "device_filter": "name=FRDM-K64F-GREEN-{{ current_build_time_epoch.stdout }} Filter",
-  "state": "scheduled"
+  "name": "{{ current_build_time_epoch.stdout }}.FRDM-K64F.GREENLED.ansible_update Campaign",
+  "device_filter": "name={{ current_build_time_epoch.stdout }}.FRDM-K64F.GREENLED.ansible_update Filter",
+  "state": "scheduled",
+  "when": "2017-06-23T19:00:00.000000Z"
 }
