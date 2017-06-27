@@ -9,6 +9,25 @@
 ### Clone this repo
     git clone https://github.com/ARMmbed/blah
 
+### Install Ansible >= 2.3.0
+
+    Ubuntu:
+
+      $ sudo apt-get install software-properties-common
+
+      $ sudo apt-add-repository ppa:ansible/ansible
+
+      $ sudo apt-get update
+
+      $ sudo apt-get install ansible
+
+    MacOS:
+
+      brew install ansible
+
+
+      https://docs.ansible.com/ansible/intro_installation.html
+
 ### Create your ARM mbed Cloud credential files
 
     1) .mbedcloud.json
