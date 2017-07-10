@@ -1,18 +1,18 @@
-- name: mbed Cloud JavaScript App | Clone the mbed manifest tool
-  git:
-    version: 'master'
-    accept_hostkey: yes
-    force: yes
-    repo: https://github.com/mray19027/manifest-tool-restricted.git
-    dest: "/home/{{ ansible_env.USER }}/Downloads/manifest-tool-restricted"
-    update: no
+#- name: mbed Cloud JavaScript App | Clone the mbed manifest tool
+#  git:
+#    version: 'master'
+#    accept_hostkey: yes
+#    force: yes
+#    repo: https://github.com/mray19027/manifest-tool-restricted.git
+#    dest: "/home/{{ ansible_env.USER }}/Downloads/manifest-tool-restricted"
+#    update: no
 
-- name: mbed Cloud JavaScript App | Install the mbed manifest tool with python-pip
-  shell: pip install .
-  args:
-    chdir: "/home/{{ ansible_env.USER }}/Downloads/manifest-tool-restricted"
-  become: yes
-  become_method: sudo
+#- name: mbed Cloud JavaScript App | Install the mbed manifest tool with python-pip
+#  shell: pip install .
+#  args:
+#    chdir: "/home/{{ ansible_env.USER }}/Downloads/manifest-tool-restricted"
+#  become: yes
+#  become_method: sudo
 
 - name: mbed Cloud JavaScript App | Install NPM libs needed
   npm: name={{ item }} state=present global=yes
