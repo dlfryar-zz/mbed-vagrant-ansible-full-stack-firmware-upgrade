@@ -76,12 +76,12 @@
     dest: "/home/{{ ansible_env.USER }}/Downloads/manifest-tool-restricted"
     update: no
 
-- name: mbed Dev | Patch up the SOURCE manifest tool for Ansible
-  replace:
-    path: "/home/{{ ansible_env.USER }}/Downloads/manifest-tool-restricted/manifesttool/create.py"
-    regexp: 'if not options.input_file.isatty():'
-    replace: 'if options.input_file.isatty():'
-    backup: no
+#- name: mbed Dev | Patch up the SOURCE manifest tool for Ansible
+#  replace:
+#    path: "/home/{{ ansible_env.USER }}/Downloads/manifest-tool-restricted/manifesttool/create.py"
+#    regexp: 'if not options.input_file.isatty():'
+#    replace: 'if options.input_file.isatty():'
+#    backup: no
 
 - name: mbed Dev | Install the mbed manifest tool with PIP
   shell: pip install .
