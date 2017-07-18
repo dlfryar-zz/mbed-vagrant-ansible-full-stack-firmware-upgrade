@@ -144,7 +144,7 @@
 # that will be copied to /vagrant/{{ current_build_time_epoch.stdout }}.FRDM-K64F.REDLED.ansible.bin
 # -s 0 sets the initial time to Unix epoch 1/1/1970 00:00.00
 - name: mbed Dev | Combine the bootloader and app to RED.bin
-  shell: python combine_bootloader_with_app.py -s 0 --header-offset 0x20000 --app-offset 0x20400 -b mbed-bootloader-k64f.bin -a ../BUILD/K64F/GCC_ARM/mbed-cloud-client-example-sources-internal.bin -o /vagrant/{{ current_build_time_epoch.stdout }}.FRDM-K64F.REDLED.bootloader.bin
+  shell: python combine_bootloader_with_app.py --header-offset 0x20000 --app-offset 0x20400 -b mbed-bootloader-k64f.bin -a ../BUILD/K64F/GCC_ARM/mbed-cloud-client-example-sources-internal.bin -o /vagrant/{{ current_build_time_epoch.stdout }}.FRDM-K64F.REDLED.bootloader.bin
   args:
     chdir: "{{ mbed_source_dir }}{{ mbed_repo_name }}/tools"
 
