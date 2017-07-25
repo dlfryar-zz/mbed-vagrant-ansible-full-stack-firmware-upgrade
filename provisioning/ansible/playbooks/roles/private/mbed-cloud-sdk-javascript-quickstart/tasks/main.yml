@@ -23,7 +23,7 @@
 
 - name: mbed Cloud JavaScript App | Get the mbed Cloud JS quickstart
   git:
-    version: 'master'
+    version: '4b547a0e61a35b50e61825f5eef63d5abeed32c3'
     accept_hostkey: yes
     force: yes
     repo: 'https://github.com/ARMmbed/mbed-cloud-sdk-javascript-quickstart'
