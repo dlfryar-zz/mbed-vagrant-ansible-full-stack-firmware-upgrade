@@ -54,7 +54,14 @@
     .netrc - this is needed to access private repos on GitHub
         machine github.com
         login your_username_here
-        password your_password_here
+        password your_password_here OR your_github_api_token_here
+    
+    ** If you have special characters or spaces in your GitHub password, or
+    would prefer to use an API token you can use that in place of the actual
+    password.  The preferred method is to use tokens since they can be scoped.
+    
+    https://github.com/settings/tokens
+
 
 ### Start up the environment
    
