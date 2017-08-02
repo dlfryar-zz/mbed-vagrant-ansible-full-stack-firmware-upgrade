@@ -103,7 +103,7 @@
 #   replace:
 #     path: "/usr/local/lib/python2.7/dist-packages/manifesttool/create.py"
 #     regexp: 'if not options.input_file.isatty\(\)\:'
-#     replace: 'if options.input_file.isatty():'
+#     replace: 'if not options.input_file.isatty() and not len(manifestInput):'
 #     backup: no
 #   become: yes
 #   become_method: sudo
