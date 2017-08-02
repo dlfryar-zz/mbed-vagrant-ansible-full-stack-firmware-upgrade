@@ -86,8 +86,8 @@
 - name: mbed Dev | Patch the manifest tool requirements to fix pyasn1
   replace:
     path: "/home/{{ ansible_env.USER }}/Downloads/manifest-tool-restricted/requirements.txt"
-    regexp: 'pyasn1 <= 0.2.3'
-    replace: 'pyasn1 >= 0.2.1'
+    regexp: 'pyasn1 >= 0.2.1'
+    replace: 'pyasn1 <= 0.2.3'
     backup: no
 
 - name: mbed Dev | Install the mbed manifest tool with PIP
