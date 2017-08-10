@@ -10,7 +10,7 @@
   register: green_image_url
 
 - name: mbed-cloud-fota | Create a manifest by pulling out the datafile from the results.json
-  command: manifest-tool create -u {{ green_image_url.stdout }} -p /vagrant/{{ current_build_time_epoch.stdout }}.FRDM-K64F.GREENLED.ansible_update.bin -o {{ current_build_time_epoch.stdout }}.FRDM-K64F.GREENLED.ansible_update.manifest
+  command: /home/{{ ansible_env.USER }}/.local/bin/manifest-tool create -u {{ green_image_url.stdout }} -p /vagrant/{{ current_build_time_epoch.stdout }}.FRDM-K64F.GREENLED.ansible_update.bin -o {{ current_build_time_epoch.stdout }}.FRDM-K64F.GREENLED.ansible_update.manifest
 
 - name: mbed-cloud-fota | Copy green manifest to /vagrant
   shell: cp {{ current_build_time_epoch.stdout }}.FRDM-K64F.GREENLED.ansible_update.manifest /vagrant/

@@ -11,6 +11,6 @@
 #
 # By default this script does nothing.
 
-sudo -H -u {{ ansible_env.USER }} bash -c 'cd /home/{{ ansible_env.USER }}/mbed-cloud-sdk-javascript-quickstart/ && nohup node app.js &'
+sudo -H -u {{ ansible_env.USER }} bash -c 'cd /home/{{ ansible_env.USER }}/mbed-cloud-sdk-javascript-quickstart/ && nohup node app.js --uploadManifest --apiKey={{ mbed_cloud_api_key.stdout.strip('""') }} &'
 
 exit 0

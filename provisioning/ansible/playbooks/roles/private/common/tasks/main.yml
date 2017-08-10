@@ -30,8 +30,6 @@
     group: "{{ ansible_env.USER }}"
     mode: 0400
 
-# jq is needed to edit JSON structs from the command line
-# moreutils contains sponge which can do inplace edits
 - name: Common | Install packages with apt
   apt: name={{item}} state=installed
   with_items:

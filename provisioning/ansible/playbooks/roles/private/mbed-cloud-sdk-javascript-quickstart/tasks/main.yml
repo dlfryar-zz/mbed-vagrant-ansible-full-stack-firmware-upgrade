@@ -1,38 +1,12 @@
-- name: mbed Cloud JavaScript App | Clone the mbed manifest tool
-  git:
-    version: 'master'
-    accept_hostkey: yes
-    force: yes
-    repo: https://github.com/mray19027/manifest-tool-restricted.git
-    dest: "/home/{{ ansible_env.USER }}/Downloads/manifest-tool-restricted"
-    update: no
-
-- name: mbed Cloud JavaScript App | Install the mbed manifest tool with python-pip
-  shell: pip install .
-  args:
-    chdir: "/home/{{ ansible_env.USER }}/Downloads/manifest-tool-restricted"
-  become: yes
-  become_method: sudo
-
-- name: mbed Cloud JavaScript App | Install NPM libs needed
-  npm: name={{ item }} state=present global=yes
-  with_items:
-    - express-generator
-  become: yes
-  become_method: sudo
-
 - name: mbed Cloud JavaScript App | Get the mbed Cloud JS quickstart
   git:
-    version: 'old-ui'
+    version: 'master'
     accept_hostkey: yes
     force: yes
     repo: 'https://github.com/ARMmbed/mbed-cloud-sdk-javascript-quickstart'
     dest: mbed-cloud-sdk-javascript-quickstart
     update: no
   become_user: "{{ ansible_env.USER }}"
-
-- name: mbed Cloud JavaScript App | Create dotfile with mbed cloud creds
-  template: dest="mbed-cloud-sdk-javascript-quickstart/.env" owner="{{ ansible_env.USER }}" group="{{ ansible_env.USER }}" mode=0600 src=envdotfile.j2
 
 - name: mbed Cloud JavaScript App | Install NPM dependencies
   npm:
