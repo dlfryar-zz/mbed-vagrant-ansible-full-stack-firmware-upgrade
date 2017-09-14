@@ -1,7 +1,7 @@
 ##### UPLOAD GREEN IMAGE
- 
+
 - name: mbed-cloud-fota | POST mbedcloud/v3/firmware-images upload firmware
-  shell: curl -s -X POST https://api.us-east-1.mbedcloud.com/v3/firmware-images/ -H 'authorization:Bearer {{ mbed_cloud_api_key.stdout.strip('\"') }}' -H 'content-type:multipart/form-data' -F datafile=@/vagrant/{{ current_build_time_epoch.stdout }}.FRDM-K64F.GREENLED.ansible_update.bin -F name={{ current_build_time_epoch.stdout }}.FRDM-K64F.GREENLED.ansible_update.bin > post-image-response-{{ current_build_time_epoch.stdout }}.json
+  shell: curl -s -X POST https://api.us-east-1.mbedcloud.com/v3/firmware-images/ -H 'authorization:Bearer {{ mbed_cloud_api_key_0.stdout }}' -H 'content-type:multipart/form-data' -F datafile=@/vagrant/{{ current_build_time_epoch.stdout }}.FRDM-K64F.GREENLED.ansible_update.bin -F name={{ current_build_time_epoch.stdout }}.FRDM-K64F.GREENLED.ansible_update.bin > post-image-response-{{ current_build_time_epoch.stdout }}.json
 
 ##### CREATE GREEN MANIFEST
 
@@ -18,7 +18,7 @@
 ##### UPLOAD GREEN MANIFEST
 
 - name: mbed-cloud-fota | Upload green manifest with cURL to mbed Cloud and save manifest resource ID
-  shell: curl -s -X POST https://api.us-east-1.mbedcloud.com/v3/firmware-manifests/ -H 'authorization:Bearer {{ mbed_cloud_api_key.stdout.strip('\"') }}' -H 'content-type:multipart/form-data' -F datafile=@/vagrant/{{ current_build_time_epoch.stdout }}.FRDM-K64F.GREENLED.ansible_update.manifest -F name={{ current_build_time_epoch.stdout }}.FRDM-K64F.GREENLED.ansible_update.manifest > post-manifest-{{ current_build_time_epoch.stdout }}.json
+  shell: curl -s -X POST https://api.us-east-1.mbedcloud.com/v3/firmware-manifests/ -H 'authorization:Bearer {{ mbed_cloud_api_key_0.stdout }}' -H 'content-type:multipart/form-data' -F datafile=@/vagrant/{{ current_build_time_epoch.stdout }}.FRDM-K64F.GREENLED.ansible_update.manifest -F name={{ current_build_time_epoch.stdout }}.FRDM-K64F.GREENLED.ansible_update.manifest > post-manifest-{{ current_build_time_epoch.stdout }}.json
 
 ##### CREATE GENERAL UPDATE FILTER
 
@@ -30,7 +30,7 @@
   template: dest="/home/{{ ansible_env.USER }}/FRDM-K64F-GREEN-FILTER-BODY.json" owner="{{ ansible_env.USER }}" group="{{ ansible_env.USER }}" mode=0600 src=FRDM-K64F-GREEN-FILTER-BODY.json.j2
 
 - name: mbed-cloud-fota | Create green device filter and save response
-  shell: curl -s -X POST https://api.us-east-1.mbedcloud.com/v3/device-queries/ -H 'authorization:Bearer {{ mbed_cloud_api_key.stdout.strip('\"') }}' -H 'content-type:application/json' --data @FRDM-K64F-GREEN-FILTER-BODY.json > post-filter-{{ current_build_time_epoch.stdout }}.json
+  shell: curl -s -X POST https://api.us-east-1.mbedcloud.com/v3/device-queries/ -H 'authorization:Bearer {{ mbed_cloud_api_key_0.stdout }}' -H 'content-type:application/json' --data @FRDM-K64F-GREEN-FILTER-BODY.json > post-filter-{{ current_build_time_epoch.stdout }}.json
 
 ##### CREATE GREEN UPDATE CAMPAIGN
 - name: mbed-cloud-fota | Get green manifest id
@@ -45,7 +45,7 @@
   template: dest="/home/{{ ansible_env.USER }}/FRDM-K64F-GREEN-CAMPAIGN-BODY.json" owner="{{ ansible_env.USER }}" group="{{ ansible_env.USER }}" mode=0600 src=FRDM-K64F-GREEN-CAMPAIGN-BODY.json.j2
 
 - name: mbed-cloud-fota | Create green campaign and save response
-  shell: curl -s -X POST https://api.us-east-1.mbedcloud.com/v3/update-campaigns/ -H 'authorization:Bearer {{ mbed_cloud_api_key.stdout.strip('\"') }}' -H 'content-type:application/json' --data @FRDM-K64F-GREEN-CAMPAIGN-BODY.json > post-campaign-{{ current_build_time_epoch.stdout }}.json
+  shell: curl -s -X POST https://api.us-east-1.mbedcloud.com/v3/update-campaigns/ -H 'authorization:Bearer {{ mbed_cloud_api_key_0.stdout }}' -H 'content-type:application/json' --data @FRDM-K64F-GREEN-CAMPAIGN-BODY.json > post-campaign-{{ current_build_time_epoch.stdout }}.json
 
 ########## BLUE
 

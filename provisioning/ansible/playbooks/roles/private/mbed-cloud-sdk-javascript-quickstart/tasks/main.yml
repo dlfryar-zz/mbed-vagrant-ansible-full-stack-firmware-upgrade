@@ -1,4 +1,4 @@
-- name: mbed Cloud JavaScript App | Get the mbed Cloud JS quickstart
+- name: get the mbed cloud javascript quickstart
   git:
     version: 'master'
     accept_hostkey: yes
@@ -8,17 +8,17 @@
     update: no
   become_user: "{{ ansible_env.USER }}"
 
-- name: mbed Cloud JavaScript App | Install NPM dependencies
+- name: install npm dependencies
   npm:
     path: mbed-cloud-sdk-javascript-quickstart
     state: latest
-    
-- name: mbed Cloud JavaScript App | copy rc.local startup script
-  template: dest="/etc/rc.local" owner=root group=root mode=0755 src=rc.local.j2
+
+- name: copy systemd script
+  template: dest="/etc/systemd/system/nodeserver.service" owner=root group=root mode=0755 src=nodeserver.service.j2
   become: yes
   become_method: sudo
 
-- name: mbed Cloud JavaScript App | bounce rc.local service to run our app
-  systemd: state=restarted name=rc.local enabled=yes
+- name: bounce service to run our app
+  systemd: state=restarted name=nodeserver enabled=yes
   become: yes
   become_method: sudo

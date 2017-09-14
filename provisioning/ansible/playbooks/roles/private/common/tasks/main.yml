@@ -52,19 +52,25 @@
 - name: Common | Add github to our known_hosts
   shell: ssh-keyscan -H github.com > .ssh/known_hosts
 
-- name: Common | Get mbedcloud api token
-  shell: jq '.MBED_CLOUD_API_KEY' ~/.mbedcloud.json
-  register: mbed_cloud_api_key
+- name: Common | Get mbedcloud api token 0
+  shell: jq -r '."mbed_cloud"[] | select(.name == "us-east-1")."API_KEY"[0]."key"' ~/.mbedcloud.json
+  register: mbed_cloud_api_key_0
+  run_once: true
+
+- name: Common | Get mbedcloud api token 1
+  shell: jq -r '."mbed_cloud"[] | select(.name == "us-east-1")."API_KEY"[1]."key"' ~/.mbedcloud.json
+  register: mbed_cloud_api_key_1
   run_once: true
 
 - name: Common | Get mbedcloud api endpoint
-  shell: jq '.MBED_CLOUD_API_ENDPOINT' ~/.mbedcloud.json
+  shell: jq -r '."mbed_cloud"[] | select(.name == "us-east-1")."API_ENDPOINT"' ~/.mbedcloud.json
   register: mbed_cloud_api_endpoint
   run_once: true
 
 - debug: msg="the current date is {{ current_build_time_epoch.stdout }}"
-- debug: msg="your mbed cloud api key is {{ mbed_cloud_api_key.stdout.strip('""') }}"
-- debug: msg="your mbed cloud api endpoint is {{ mbed_cloud_api_endpoint.stdout.strip('""') }}"
+- debug: msg="your mbed cloud api key is {{ mbed_cloud_api_key_0 }}"
+- debug: msg="your mbed cloud api key is {{ mbed_cloud_api_key_1 }}"
+- debug: msg="your mbed cloud api endpoint is {{ mbed_cloud_api_endpoint }}"
 - debug: msg="the current epoch is {{ ansible_date_time.epoch }}"
 - debug: msg="the current iso8601 is {{ ansible_date_time.iso8601 }}"
 - debug: msg="the current iso8601_micro is {{ ansible_date_time.iso8601_micro }}"

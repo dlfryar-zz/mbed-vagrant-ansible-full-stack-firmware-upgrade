@@ -7,3 +7,4 @@
     - role: private/common
     - role: private/mean-stack
     - role: private/mbed-cloud-sdk-javascript-quickstart
+    - role: private/mbed-cloud-sdk-python-quickstart

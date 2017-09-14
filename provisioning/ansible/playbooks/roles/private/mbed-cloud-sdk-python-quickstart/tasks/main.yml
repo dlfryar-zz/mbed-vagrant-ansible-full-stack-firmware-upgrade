@@ -1,0 +1,23 @@
+- name: clone mbed cloud python quickstart
+  git:
+    version: 'master'
+    accept_hostkey: yes
+    force: yes
+    repo: 'https://github.com/ARMmbed/mbed-cloud-sdk-python-quickstart'
+    dest: mbed-cloud-sdk-python-quickstart
+    update: no
+  become_user: "{{ ansible_env.USER }}"
+
+- name: install PIP dependencies
+  pip:
+    requirements: "/home/{{ ansible_env.USER }}/mbed-cloud-sdk-python-quickstart/requirements.txt"
+
+- name: copy systemd script
+  template: dest="/etc/systemd/system/pythonserver.service" owner=root group=root mode=0755 src=pythonserver.service.j2
+  become: yes
+  become_method: sudo
+
+- name: bounce service to run our app
+  systemd: state=restarted name=pythonserver enabled=yes
+  become: yes
+  become_method: sudo

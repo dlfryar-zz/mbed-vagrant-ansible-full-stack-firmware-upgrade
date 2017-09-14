@@ -1,0 +1,17 @@
+[Unit]
+Description=Mbed Python Example Server
+
+[Service]
+Environment="PORT=8081"
+ExecStart=/usr/bin/python /home/{{ ansible_env.USER }}/mbed-cloud-sdk-python-quickstart/app.py --uploadManifest --apiKey={{ mbed_cloud_api_key_1.stdout }}
+WorkingDirectory=/home/ubuntu/mbed-cloud-sdk-python-quickstart
+Restart=always
+RestartSec=10
+StandardOutput=syslog
+StandardError=syslog
+SyslogIdentifier=pythonserver-example
+User={{ ansible_env.USER }}
+Group={{ ansible_env.USER }}
+
+[Install]
+WantedBy=multi-user.target

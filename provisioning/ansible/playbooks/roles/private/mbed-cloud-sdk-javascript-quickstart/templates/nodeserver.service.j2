@@ -1,0 +1,17 @@
+[Unit]
+Description=Mbed Javascript NodeJS Example Server
+
+[Service]
+Environment="PORT=8080"
+ExecStart=/usr/bin/node app.js --uploadManifest --apiKey={{ mbed_cloud_api_key_0.stdout }}
+WorkingDirectory=/home/{{ ansible_env.USER }}/mbed-cloud-sdk-javascript-quickstart
+Restart=always
+RestartSec=10
+StandardOutput=syslog
+StandardError=syslog
+SyslogIdentifier=nodeserver-example
+User={{ ansible_env.USER }}
+Group={{ ansible_env.USER }}
+
+[Install]
+WantedBy=multi-user.target
