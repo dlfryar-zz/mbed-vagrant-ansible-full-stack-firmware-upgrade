@@ -8,7 +8,7 @@
     update: no
   become_user: "{{ ansible_env.USER }}"
 
-- name: install PIP dependencies
+- name: install pip dependencies
   pip:
     requirements: "/home/{{ ansible_env.USER }}/mbed-cloud-sdk-python-quickstart/requirements.txt"
 

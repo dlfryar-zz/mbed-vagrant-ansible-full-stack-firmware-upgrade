@@ -53,7 +53,7 @@
 
 - name: mbed Dev | Change LED blink color to RED in binary
   lineinfile:
-    path: "{{ mbed_source_dir }}{{ mbed_repo_name }}/platform/mbed-os/setup.cpp"
+    path: "{{ mbed_source_dir }}{{ mbed_repo_name }}/source/platform/mbed-os/setup.cpp"
     regexp: 'DigitalOut[ ]*led\((LED_RED|LED_GREEN|LED_BLUE)\);'
     line: 'DigitalOut led(LED_RED);'
     state: present
@@ -78,7 +78,7 @@
 
 - name: mbed Dev | Change LED blink color to GREEN in binary
   lineinfile:
-    path: "{{ mbed_source_dir }}{{ mbed_repo_name }}/platform/mbed-os/setup.cpp"
+    path: "{{ mbed_source_dir }}{{ mbed_repo_name }}/source/platform/mbed-os/setup.cpp"
     regexp: 'DigitalOut[ ]*led\((LED_RED|LED_GREEN|LED_BLUE)\);'
     line: 'DigitalOut led(LED_GREEN);'
     state: present
@@ -93,7 +93,7 @@
 
 - name: mbed Dev | Change LED blink color to BLUE in binary
   lineinfile:
-    path: "{{ mbed_source_dir }}{{ mbed_repo_name }}/platform/mbed-os/setup.cpp"
+    path: "{{ mbed_source_dir }}{{ mbed_repo_name }}/source/platform/mbed-os/setup.cpp"
     regexp: 'DigitalOut[ ]*led\((LED_RED|LED_GREEN|LED_BLUE)\);'
     line: 'DigitalOut led(LED_BLUE);'
     state: present
