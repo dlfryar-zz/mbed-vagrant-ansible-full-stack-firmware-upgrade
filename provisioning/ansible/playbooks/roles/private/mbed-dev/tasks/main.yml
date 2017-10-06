@@ -51,12 +51,17 @@
 - name: mbed Dev | Copy update_default_resources.c from manifest dir
   shell: cp /home/{{ ansible_env.USER }}/update_default_resources.c {{ mbed_source_dir }}{{ mbed_repo_name }}
 
-- name: mbed Dev | Change LED blink color to RED in binary
+- name: mbed Dev | Change LED to ON
   lineinfile:
     path: "{{ mbed_source_dir }}{{ mbed_repo_name }}/source/platform/mbed-os/setup.cpp"
-    regexp: 'DigitalOut[ ]*led\((LED_RED|LED_GREEN|LED_BLUE)\);'
-    line: 'DigitalOut led(LED_RED);'
+    regexp: 'DigitalOut[ ]*led\(MBED_CONF_APP_LED_PINNAME, LED_OFF\);'
+    line: 'DigitalOut led(MBED_CONF_APP_LED_PINNAME, LED_ON);'
     state: present
+
+- name: mbed Dev | Change LED blink color to RED in config
+  shell: jq '.config."led-pinname"."value" = "LED_RED"' mbed_app.json | sponge mbed_app.json
+  args:
+    chdir: "{{ mbed_source_dir }}{{ mbed_repo_name }}"
 
 - name: mbed Dev | Disable mbed-trace.enable in mbed_app.json
   shell: jq '.target_overrides."*"."mbed-trace.enable" = 0' mbed_app.json | sponge mbed_app.json
@@ -76,12 +81,10 @@
   args:
     chdir: "{{ mbed_source_dir }}{{ mbed_repo_name }}/tools"
 
-- name: mbed Dev | Change LED blink color to GREEN in binary
-  lineinfile:
-    path: "{{ mbed_source_dir }}{{ mbed_repo_name }}/source/platform/mbed-os/setup.cpp"
-    regexp: 'DigitalOut[ ]*led\((LED_RED|LED_GREEN|LED_BLUE)\);'
-    line: 'DigitalOut led(LED_GREEN);'
-    state: present
+- name: mbed Dev | Change LED blink color to GREEN in config
+  shell: jq '.config."led-pinname"."value" = "LED_GREEN"' mbed_app.json | sponge mbed_app.json
+  args:
+    chdir: "{{ mbed_source_dir }}{{ mbed_repo_name }}"
 
 - name: mbed Dev | Compile GREEN mbed client FRDM-K64F
   shell: /usr/local/bin/mbed compile -m K64F -t GCC_ARM >> mbed-cli-compile.log
@@ -91,12 +94,10 @@
 - name: mbed Dev | Copy green.bin to /vagrant
   shell: cp {{ mbed_source_dir }}{{ mbed_repo_name }}/BUILD/K64F/GCC_ARM/mbed-cloud-client-example-internal.bin /vagrant/{{ current_build_time_epoch.stdout }}.FRDM-K64F.GREENLED.ansible_update.bin
 
-- name: mbed Dev | Change LED blink color to BLUE in binary
-  lineinfile:
-    path: "{{ mbed_source_dir }}{{ mbed_repo_name }}/source/platform/mbed-os/setup.cpp"
-    regexp: 'DigitalOut[ ]*led\((LED_RED|LED_GREEN|LED_BLUE)\);'
-    line: 'DigitalOut led(LED_BLUE);'
-    state: present
+- name: mbed Dev | Change LED blink color to BLUE in config
+  shell: jq '.config."led-pinname"."value" = "LED_BLUE"' mbed_app.json | sponge mbed_app.json
+  args:
+    chdir: "{{ mbed_source_dir }}{{ mbed_repo_name }}"
 
 - name: mbed Dev | Compile BLUE mbed client FRDM-K64F
   shell: /usr/local/bin/mbed compile -m K64F -t GCC_ARM >> mbed-cli-compile.log

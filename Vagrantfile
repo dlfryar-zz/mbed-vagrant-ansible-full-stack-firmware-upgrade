@@ -9,7 +9,7 @@ Vagrant.configure("2") do |config|
   config.vm.define "devbox" do |devbox|
     devbox.vm.hostname = 'devbox'
     devbox.vm.box = "ubuntu/xenial64"
-    devbox.vm.network :private_network, ip: "192.168.10.5"
+    devbox.vm.network :private_network, ip: "192.168.11.5"
 
     devbox.ssh.insert_key = true
     devbox.ssh.forward_agent = true
@@ -36,7 +36,7 @@ Vagrant.configure("2") do |config|
     server.vm.hostname = 'server'
     server.vm.box = "ubuntu/xenial64"
 
-    server.vm.network :private_network, ip: "192.168.10.6"
+    server.vm.network :private_network, ip: "192.168.11.6"
     server.vm.network "forwarded_port", guest: 3000, host: 3000
     server.vm.network "forwarded_port", guest: 8080, host: 8080
     server.vm.network "forwarded_port", guest: 8081, host: 8081
