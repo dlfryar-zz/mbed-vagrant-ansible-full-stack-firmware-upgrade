@@ -1,0 +1,5 @@
+wifi_config_enabled: "no"
+wifi_ssid: "MYSSID"
+wifi_password: "MYPASSWORD"
+use_custom_mbedos_ver: "no"
+custmo_mbedos_ver: "mbed-os-5.5.7"

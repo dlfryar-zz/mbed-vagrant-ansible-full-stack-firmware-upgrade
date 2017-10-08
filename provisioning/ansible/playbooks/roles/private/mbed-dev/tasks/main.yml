@@ -51,6 +51,28 @@
 - name: mbed Dev | Copy update_default_resources.c from manifest dir
   shell: cp /home/{{ ansible_env.USER }}/update_default_resources.c {{ mbed_source_dir }}{{ mbed_repo_name }}
 
+# vvvvvvvvvvvvvvvv USING ESP8266 WIFI vvvvvvvvvvvvvvvv
+
+- name: mbed Dev | Copy wifi mbed_app.json conig
+  shell: cp configs/wifi_esp8266_v4.json mbed_app.json
+  args:
+    chdir: "{{ mbed_source_dir }}{{ mbed_repo_name }}"
+  when: wifi_config_enabled == "yes"
+
+- name: mbed Dev | Set wifi SSID in config
+  shell: jq '.config."wifi-ssid"."value" = "\"{{ wifi_ssid }}\""' mbed_app.json | sponge mbed_app.json
+  args:
+    chdir: "{{ mbed_source_dir }}{{ mbed_repo_name }}"
+  when: wifi_config_enabled == "yes"
+
+- name: mbed Dev | Set wifi password in config
+  shell: jq '.config."wifi-password"."value" = "\"{{ wifi_password }}\""' mbed_app.json | sponge mbed_app.json
+  args:
+    chdir: "{{ mbed_source_dir }}{{ mbed_repo_name }}"
+  when: wifi_config_enabled == "yes"
+
+# ^^^^^^^^^^^^^^^^ USING ESP8266 WIFI ^^^^^^^^^^^^^^^^
+
 - name: mbed Dev | Change LED to ON
   lineinfile:
     path: "{{ mbed_source_dir }}{{ mbed_repo_name }}/source/platform/mbed-os/setup.cpp"
@@ -67,6 +89,33 @@
   shell: jq '.target_overrides."*"."mbed-trace.enable" = 0' mbed_app.json | sponge mbed_app.json
   args:
     chdir: "{{ mbed_source_dir }}{{ mbed_repo_name }}"
+
+# Downloading: 9 %
+# Deep sleep lock would overflow (> USHRT_MAX)
+# - name: mbed Dev | Change Deep sleep lock
+#   lineinfile:
+#     path: "{{ mbed_source_dir }}{{ mbed_repo_name }}/mbed-os/hal/mbed_sleep_manager.c"
+#     regexp: 'if \(deep_sleep_lock == USHRT_MAX\) \{'
+#     line: 'if (deep_sleep_lock == 255) {'
+#     state: present
+
+# - name: copy mbed_sleep_manager.c to disable lptimer
+#   template: dest="{{ mbed_source_dir }}{{ mbed_repo_name }}/mbed-os/hal/mbed_sleep_manager.c" src=mbed_sleep_manager.c.j2
+
+# - name: copy Timer.cpp to update lptimer
+#   template: dest="{{ mbed_source_dir }}{{ mbed_repo_name }}/mbed-os/drivers/Timer.cpp" src=Timer.cpp.j2
+
+# - name: copy Timer.h to update lptimer
+#   template: dest="{{ mbed_source_dir }}{{ mbed_repo_name }}/mbed-os/drivers/Timer.h" src=Timer.h.j2
+
+# - name: copy Timer.h to update lptimer
+#   template: dest="{{ mbed_source_dir }}{{ mbed_repo_name }}/mbed-os/mbed-os/targets/TARGET_Freescale/TARGET_MCUXpresso_MCUS/api/sleep.c" src=sleep.c.j2
+
+- name: mbed Dev | Compile RED mbed client FRDM-K64F
+  shell: mbed update mbed-os-5.5.7
+  args:
+    chdir: "{{ mbed_source_dir }}{{ mbed_repo_name }}/mbed-os"
+  when: use_custom_mbedos_ver == "yes"
 
 - name: mbed Dev | Compile RED mbed client FRDM-K64F
   shell: /usr/local/bin/mbed compile -m K64F -t GCC_ARM >> mbed-cli-compile.log
